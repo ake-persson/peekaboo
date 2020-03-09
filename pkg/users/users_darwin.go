@@ -3,10 +3,9 @@
 package users
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
@@ -28,9 +27,17 @@ func GetUsers() (*resources.UserList, error) {
 		case "password":
 			continue
 		case "uid":
-			//			u.UidSigned = kv[1]
+			i, err := strconv.ParseInt(kv[1], 10, 64)
+			if err != nil {
+				return nil, err
+			}
+			u.UidSigned = i
 		case "gid":
-			//			u.GidSigned = kv[1]
+			i, err := strconv.ParseInt(kv[1], 10, 64)
+			if err != nil {
+				return nil, err
+			}
+			u.GidSigned = i
 		case "dir":
 			u.Directory = kv[1]
 		case "shell":
