@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package peekaboo.v1.resources;
+
+option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resources";
+
+message User {
+  // This is the user's login name. It should not contain capital letters.
+  string name = 1;
+  // The privileged root login account (superuser) has the user ID 0.
+  uint64 uid = 2;
+  // This is the numeric primary group ID for this user. (Additional groups for the user are defined in the system group file; see group(5)).
+  uint64 gid = 3;
+  // Signed UID for Mac OS X.
+  int64 uid_signed = 4;
+  // Signed GID for Mac OS X.
+  int64 gid_signed = 5;
+  // Description.
+  string description = 6;
+  // Home directory.
+  string directory = 7;
+  // This is the program to run at login (if empty, use /bin/sh). If set to a nonexistent executable, the user will be unable to login through login(1). The value in this field is used to set the SHELL environment variable.
+  string shell = 8;
+}
