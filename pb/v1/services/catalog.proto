@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package peekaboo.v1.services;
+
+option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services;services";
+
+import "google/protobuf/empty.proto";
+import "pb/v1/resources/filter.proto";
+import "pb/v1/resources/system.proto";
+
+service CatalogService {
+  rpc RegisterSystem(resources.System) returns (google.protobuf.Empty);
+  rpc SystemKeepAlive(SystemKeepAliveRequest) returns (google.protobuf.Empty);
+  rpc ListSystems(ListSystemsRequest) returns (stream resources.System);
+}
+
+message ListSystemsRequest {
+  resources.Filter filter = 1;
+}
+
+message SystemKeepAliveRequest {
+  string hostname = 1;
+}

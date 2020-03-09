@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package peekaboo.v1.resources;
+
+option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resources";
+
+message Site {
+  string site = 1;
+  string address1 = 2;
+  string address2 = 3;
+  string city = 4;
+  string zip_postal_code = 5;
+  string country_code = 6;
+  string organization = 7;
+}

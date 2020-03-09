@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package peekaboo.v1.resources;
+
+option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resources";
+
+import "google/protobuf/timestamp.proto";
+
+message System {
+  google.protobuf.Timestamp created = 1;
+  google.protobuf.Timestamp updated = 2;
+  google.protobuf.Timestamp last_seen = 3;
+  string hostname = 4;
+  string address = 5;
+  string manufacturer = 6;
+  string product = 7;
+  string product_version = 8;
+  string serial_number = 9;
+  string bios_vendor = 10; // Only PC
+  string bios_date = 11; // Only PC
+  string bios_version = 12; // Only PC
+  string boot_rom_version = 13; // Only Apple
+  string smc_version = 14; // Only Apple
+  int32 memory_gb = 15;
+  int32 cpu_cores_per_socket = 16;
+  int32 cpu_physical_cores = 17;
+  int32 cpu_logical_cores = 18;
+  int32 cpu_sockets = 19;
+  int32 cpu_threads_per_core = 20;
+  string cpu_model = 21;
+  string cpu_flags = 22;
+  string os = 23;
+  string os_version = 24;
+  string os_build = 25;
+  string os_descr = 26;
+  string kernel = 27;
+  string kernel_version = 28;
+  string kernel_release = 29;
+  string description = 30;
+  string site = 31;
+  string rack = 32;
+  int32 rack_position = 33;
+  int32 rack_size = 34;
+}

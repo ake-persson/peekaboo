@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package peekaboo.v1.resources;
+
+option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resources";
+
+message Rack {
+  string rack = 1;
+  int32 start_position = 2;
+  bool start_position_top = 3;
+  int32 height = 4;
+  string site = 5;
+}

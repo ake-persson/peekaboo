@@ -1,0 +1,65 @@
+$body-bg:            rgba(30, 30, 30, 1) !default;
+$body-color:         rgba(180, 180, 180, 1) !default;
+
+$font-size-base:     0.8rem !default;
+
+$headings-color:     rgba(220, 220, 220, 1) !default;
+
+$grid-gutter-width:  15px !default;
+
+$card-bg:            rgba(45, 45, 45, 0.6) !default;
+$card-border-radius: 10px !default;
+$card-border-color:  transparent !default;
+
+$table-bg:           rgba(25, 25, 25, 0.6) !default;
+$table-accent-bg:    rgba(20, 20, 20, 0.6) !default;
+
+$modal-content-bg:           transparent !default;
+$modal-content-border-width: 0;
+$modal-backdrop-opacity:     0.9 !default;
+$modal-backdrop-bg:          black !default;
+
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+
+dl dt {
+    color: rgba(220, 220, 220, 1);
+}
+
+table {
+    thead tr th {
+        color: rgba(220, 220, 220, 1);
+    }
+}
+
+.rack tr {
+    border-top: 1px solid rgba(40, 40, 40, 1);
+}
+
+td.server {
+    background: rgba(60, 125, 240, 0.7) !important;
+    cursor: pointer;
+}
+
+td.power-switch {
+    background: rgba(255, 165, 80, 0.7) !important;
+}
+
+td.network-switch {
+    background: rgba(125, 210, 110, 0.7) !important;
+}
+
+.modal-full {
+    margin: 0;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+.modal-close {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+
+    cursor: pointer !important;
+
+    color: rgba(220, 220, 220, 1) !important;
+}

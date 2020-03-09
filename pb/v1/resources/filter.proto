@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package peekaboo.v1.resources;
+
+option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resources";
+
+enum Operator {
+  EQ = 0;
+  NEQ = 1;
+  GT = 2;
+  GTE = 3;
+  LT = 4;
+  LTE = 5;
+  IN = 6;
+  LIKE = 7;
+}
+
+message Match {
+  string field = 1;
+  string value = 2;
+  repeated string values = 3;
+  Operator operator = 4;
+}
+
+message Sort {
+  string field = 1;
+  bool desc = 2;
+}
+
+message Filter {
+  repeated string fields = 1;
+  repeated Match matches = 2;
+  repeated Sort sorting = 3;
+  int32 limit = 4;
+}

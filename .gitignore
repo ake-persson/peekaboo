@@ -1,0 +1,8 @@
+.DS_Store
+*.swp
+/agent/agent
+/catalog/catalog
+/client/client
+/www/node_modules
+/www/package-lock.json
+/www/css
