@@ -30,6 +30,9 @@ var version = "undefined"
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource>\n", os.Args[0])
 	flag.PrintDefaults()
+	fmt.Fprintf(os.Stderr, `  <resource>
+    	Resource to query [system, users]
+`)
 }
 
 func main() {
