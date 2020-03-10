@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package peekaboo.v1.resources;
+
+option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resources";
+
+message Group {
+  string groupname = 1;
+  uint64 gid = 2;
+  // Signed GID for Mac OS X.
+  int64 gid_signed = 3;
+  repeated string members = 4;
+}

@@ -37,7 +37,7 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource> <address...>\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, `  resource
-    	Resource to query [system, users]
+    	Resource to query [system, users, groups]
   address
         Address to agent specified as <address[:port]> (default port 17711)
 `)
@@ -123,6 +123,8 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) envelope {
 		e.Response, e.Error = client.GetSystem(ctx, &services.GetSystemRequest{})
 	case "users":
 		e.Response, e.Error = client.ListUsers(ctx, &services.ListUsersRequest{})
+	case "groups":
+		e.Response, e.Error = client.ListGroups(ctx, &services.ListGroupsRequest{})
 	}
 
 	return e

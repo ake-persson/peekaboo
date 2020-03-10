@@ -12,57 +12,54 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 )
 
-func ListUsers() (*services.ListUsersResponse, error) {
-	out, err := exec.Command("dscacheutil", "-q", "user").Output()
+func splitOmitEmpty(s string, del string) []string {
+	out := []string{}
+	for _, v := range strings.Split(s, del) {
+		if v != "" {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+func ListGroups() (*services.ListGroupsResponse, error) {
+	out, err := exec.Command("dscacheutil", "-q", "group").Output()
 	if err != nil {
 		return nil, err
 	}
 
-	users := &services.ListUsersResponse{Users: []*resources.User{}}
-	u := &resources.User{}
+	resp := &services.ListGroupsResponse{Groups: []*resources.Group{}}
+	g := &resources.Group{}
 	i := 0
 	for _, l := range strings.Split(string(out), "\n") {
 		kv := strings.SplitN(l, ": ", 2)
 		switch kv[0] {
 		case "name":
-			u.Username = kv[1]
+			g.Groupname = kv[1]
 			i++
 		case "password":
 			i++
 			continue
-		case "uid":
-			signed, err := strconv.ParseInt(kv[1], 10, 64)
-			if err != nil {
-				return nil, err
-			}
-			u.UidSigned = signed
-			i++
 		case "gid":
 			signed, err := strconv.ParseInt(kv[1], 10, 64)
 			if err != nil {
 				return nil, err
 			}
-			u.GidSigned = signed
+			g.GidSigned = signed
 			i++
-		case "dir":
-			u.Directory = kv[1]
-			i++
-		case "shell":
-			u.Shell = kv[1]
-			i++
-		case "gecos":
-			u.Name = kv[1]
+		case "users":
+			g.Members = splitOmitEmpty(kv[1], " ")
 			i++
 		case "":
-			if i >= 7 {
-				users.Users = append(users.Users, u)
+			if i >= 3 {
+				resp.Groups = append(resp.Groups, g)
 			}
-			u = &resources.User{}
+			g = &resources.Group{}
 			i = 0
 		default:
 			return nil, fmt.Errorf("unknown key: %s", kv[0])
 		}
 	}
 
-	return users, nil
+	return resp, nil
 }

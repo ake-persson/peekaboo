@@ -16,3 +16,7 @@ func (s *server) GetSystem(ctx context.Context, in *services.GetSystemRequest) (
 func (s *server) ListUsers(ctx context.Context, in *services.ListUsersRequest) (*services.ListUsersResponse, error) {
 	return user.ListUsers()
 }
+
+func (s *server) ListGroups(ctx context.Context, in *services.ListGroupsRequest) (*services.ListGroupsResponse, error) {
+	return user.ListGroups()
+}

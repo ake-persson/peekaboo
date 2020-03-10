@@ -17,7 +17,7 @@ func ListUsers() (*services.ListUsersResponse, error) {
 		return nil, err
 	}
 
-	users := &services.ListUsersResponse{Users: []*resources.User{}}
+	resp := &services.ListUsersResponse{Users: []*resources.User{}}
 	for _, l := range strings.Split(string(b), "\n") {
 		a := strings.Split(l, ":")
 
@@ -35,7 +35,7 @@ func ListUsers() (*services.ListUsersResponse, error) {
 			return nil, err
 		}
 
-		users.Users = append(users.Users, &resources.User{
+		resp.Users = append(resp.Users, &resources.User{
 			Username:  a[0],
 			Uid:       uid,
 			Gid:       gid,
@@ -45,5 +45,5 @@ func ListUsers() (*services.ListUsersResponse, error) {
 		})
 	}
 
-	return users, nil
+	return resp, nil
 }
