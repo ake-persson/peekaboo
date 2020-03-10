@@ -6,7 +6,7 @@ option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resou
 
 message User {
   string username = 1;
-  string name = 2;
+  string comment = 2;
   uint64 uid = 3;
   uint64 gid = 4;
   // Signed UID for Mac OS X.

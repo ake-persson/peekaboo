@@ -39,7 +39,7 @@ func ListUsers() (*services.ListUsersResponse, error) {
 			Username:  a[0],
 			Uid:       uid,
 			Gid:       gid,
-			Name:      a[4],
+			Comment:   a[4],
 			Directory: a[5],
 			Shell:     a[6],
 		})

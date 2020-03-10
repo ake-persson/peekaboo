@@ -17,7 +17,7 @@ func ListGroups() (*services.ListGroupsResponse, error) {
 		return nil, err
 	}
 
-	resp := &services.ListGroupResponse{Groups: []*resources.Group{}}
+	resp := &services.ListGroupsResponse{Groups: []*resources.Group{}}
 	for _, l := range strings.Split(string(b), "\n") {
 		a := strings.Split(l, ":")
 		if len(a) < 3 {
@@ -29,12 +29,12 @@ func ListGroups() (*services.ListGroupsResponse, error) {
 			return nil, err
 		}
 
-		req.Groups = append(req.Groups, &resources.Group{
+		resp.Groups = append(resp.Groups, &resources.Group{
 			Groupname: a[0],
 			Gid:       gid,
-			Members:   strings.Split(a[3], ","),
+			Members:   splitOmitEmpty(a[3], ","),
 		})
 	}
 
-	return users, nil
+	return resp, nil
 }

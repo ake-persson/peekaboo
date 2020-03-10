@@ -51,7 +51,7 @@ func ListUsers() (*services.ListUsersResponse, error) {
 			u.Shell = kv[1]
 			i++
 		case "gecos":
-			u.Name = kv[1]
+			u.Comment = kv[1]
 			i++
 		case "":
 			if i >= 7 {
