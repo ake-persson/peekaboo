@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/mitchellh/go-homedir"
@@ -17,7 +18,6 @@ import (
 )
 
 type config struct {
-	Addr     string
 	NoTLS    bool
 	MTLS     bool // TBD
 	CertFile string
@@ -25,13 +25,21 @@ type config struct {
 	CAFile   string
 }
 
+type envelope struct {
+	Address  string      `json:"address"`
+	Response interface{} `json:"response,omitempty"`
+	Error    error       `json:"error,omitempty"`
+}
+
 var version = "undefined"
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource>\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource> <address...>\n", os.Args[0])
 	flag.PrintDefaults()
-	fmt.Fprintf(os.Stderr, `  <resource>
+	fmt.Fprintf(os.Stderr, `  resource
     	Resource to query [system, users]
+  address
+        Address to agent specified as <address>, port will default to 17711 or <address:port>
 `)
 }
 
@@ -40,9 +48,8 @@ func main() {
 	conf := &config{}
 	var printVersion bool
 	flag.Usage = usage
-	flag.StringVar(&conf.Addr, "addr", "localhost:17711", "Agent address")
 	flag.BoolVar(&conf.NoTLS, "no-tls", false, "No TLS (testing)")
-	flag.BoolVar(&conf.MTLS, "mtls", false, "MTLS") // TBD
+	flag.BoolVar(&conf.MTLS, "mtls", false, "Use MTLS") // TBD
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
@@ -54,12 +61,14 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Get resource.
-	if len(flag.Args()) < 1 {
+	if len(flag.Args()) < 2 {
 		usage()
 		os.Exit(1)
 	}
+
+	// Positional arguments.
 	resource := flag.Args()[0]
+	addresses := flag.Args()[1:]
 
 	// Replace tilde with home directory.
 	conf.CertFile, _ = homedir.Expand(conf.CertFile)
@@ -79,10 +88,26 @@ func main() {
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	}
 
+	for _, addr := range addresses {
+		if !strings.Contains(addr, ":") {
+			addr += ":17711"
+		}
+
+		e := dialAgent(resource, addr, opts)
+		b, _ := json.MarshalIndent(e, "", "  ")
+		fmt.Println(string(b))
+
+	}
+}
+
+func dialAgent(resource string, addr string, opts []grpc.DialOption) envelope {
+	e := envelope{Address: addr}
+
 	// Connect to gRPC server.
-	conn, err := grpc.Dial(conf.Addr, opts...)
+	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {
-		log.Fatalf("failed to connect: %v", err)
+		e.Error = err
+		return e
 	}
 	defer conn.Close()
 
@@ -93,16 +118,15 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	var v interface{}
 	switch resource {
 	case "system":
-		v, err = client.GetSystem(ctx, &services.GetSystemRequest{})
+		e.Response, e.Error = client.GetSystem(ctx, &services.GetSystemRequest{})
 	case "users":
-		v, err = client.ListUsers(ctx, &services.ListUsersRequest{})
+		e.Response, e.Error = client.ListUsers(ctx, &services.ListUsersRequest{})
 	}
-	if err != nil {
-		log.Fatal(err)
-	}
-	b, _ := json.MarshalIndent(v, "", "  ")
+
+	b, _ := json.MarshalIndent(e, "", "  ")
 	fmt.Println(string(b))
+
+	return e
 }
