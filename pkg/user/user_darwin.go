@@ -46,8 +46,10 @@ func ListUsers() (*services.ListUsersResponse, error) {
 		case "gecos":
 			u.Description = kv[1]
 		case "":
-			users.Users = append(users.Users, u)
-			u = &resources.User{}
+			if u.Username != "" {
+				users.Users = append(users.Users, u)
+				u = &resources.User{}
+			}
 		default:
 			return nil, fmt.Errorf("unknown key: %s", kv[0])
 		}

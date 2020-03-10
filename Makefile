@@ -3,7 +3,7 @@ MINOR=$(shell cat MINOR)
 PATCH=$(shell cat PATCH)
 VERSION=$(MAJOR).$(MINOR).$(PATCH)
 
-all:	test build
+all:	build
 
 deps:
 	go get -u golang.org/x/lint/golint

@@ -27,10 +27,16 @@ type config struct {
 
 var version = "undefined"
 
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource>\n", os.Args[0])
+	flag.PrintDefaults()
+}
+
 func main() {
 	// Setup config and flags.
 	conf := &config{}
 	var printVersion bool
+	flag.Usage = usage
 	flag.StringVar(&conf.Addr, "addr", "localhost:17711", "Catalog address")
 	flag.BoolVar(&conf.NoTLS, "no-tls", false, "No TLS (testing)")
 	flag.BoolVar(&conf.MTLS, "mtls", false, "MTLS") // TBD
@@ -47,7 +53,8 @@ func main() {
 
 	// Get resource.
 	if len(flag.Args()) < 1 {
-		log.Fatal("no resource specified")
+		usage()
+		os.Exit(1)
 	}
 	resource := flag.Args()[0]
 
