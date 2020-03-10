@@ -125,8 +125,5 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) envelope {
 		e.Response, e.Error = client.ListUsers(ctx, &services.ListUsersRequest{})
 	}
 
-	b, _ := json.MarshalIndent(e, "", "  ")
-	fmt.Println(string(b))
-
 	return e
 }
