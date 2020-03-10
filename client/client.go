@@ -40,7 +40,7 @@ func main() {
 	conf := &config{}
 	var printVersion bool
 	flag.Usage = usage
-	flag.StringVar(&conf.Addr, "addr", "localhost:17711", "Catalog address")
+	flag.StringVar(&conf.Addr, "addr", "localhost:17711", "Agent address")
 	flag.BoolVar(&conf.NoTLS, "no-tls", false, "No TLS (testing)")
 	flag.BoolVar(&conf.MTLS, "mtls", false, "MTLS") // TBD
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
