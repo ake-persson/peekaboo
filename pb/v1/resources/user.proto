@@ -23,7 +23,3 @@ message User {
   // This is the program to run at login (if empty, use /bin/sh). If set to a nonexistent executable, the user will be unable to login through login(1). The value in this field is used to set the SHELL environment variable.
   string shell = 9;
 }
-
-message UserList {
-  repeated User users = 1;
-}

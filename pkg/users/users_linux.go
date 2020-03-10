@@ -8,15 +8,16 @@ import (
 	"strings"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
+	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 )
 
-func GetUsers() (*resources.UserList, error) {
+func ListUsers() (*services.ListUsersResponse, error) {
 	b, err := ioutil.ReadFile("/etc/passwd")
 	if err != nil {
 		return nil, err
 	}
 
-	users := &resources.UserList{}
+	users := &services.ListUsersResponse{Users: []*resources.User{}}
 	for _, l := range strings.Split(string(b), "\n") {
 		a := strings.Split(l, ":")
 

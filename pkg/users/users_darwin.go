@@ -9,15 +9,16 @@ import (
 	"strings"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
+	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 )
 
-func GetUsers() (*resources.UserList, error) {
+func ListUsers() (*services.ListUsersResponse, error) {
 	out, err := exec.Command("dscacheutil", "-q", "user").Output()
 	if err != nil {
 		return nil, err
 	}
 
-	users := &resources.UserList{Users: []*resources.User{}}
+	users := &services.ListUsersResponse{Users: []*resources.User{}}
 	u := &resources.User{}
 	for _, l := range strings.Split(string(out), "\n") {
 		kv := strings.SplitN(l, ": ", 2)
