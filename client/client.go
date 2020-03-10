@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -13,7 +14,6 @@ import (
 	"google.golang.org/grpc/credentials"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
-	"github.com/peekaboo-labs/peekaboo/pkg/system"
 )
 
 type config struct {
@@ -44,6 +44,12 @@ func main() {
 		fmt.Printf("%s\n", version)
 		os.Exit(0)
 	}
+
+	// Get resource.
+	if len(flag.Args()) < 1 {
+		log.Fatal("no resource specified")
+	}
+	resource := flag.Args()[0]
 
 	// Replace tilde with home directory.
 	conf.CertFile, _ = homedir.Expand(conf.CertFile)
@@ -77,10 +83,16 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	req, err := client.GetSystem(ctx, &services.GetSystemRequest{})
-	if err != nil {
-		log.Fatalf("get system: %v", err)
+	var v interface{}
+	switch resource {
+	case "system":
+		v, err = client.GetSystem(ctx, &services.GetSystemRequest{})
+	case "users":
+		v, err = client.ListUsers(ctx, &services.ListUsersRequest{})
 	}
-
-	system.PrintSystem(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	b, _ := json.MarshalIndent(v, "", "  ")
+	fmt.Println(string(b))
 }
