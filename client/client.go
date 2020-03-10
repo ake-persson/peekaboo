@@ -39,7 +39,7 @@ func usage() {
 	fmt.Fprintf(os.Stderr, `  resource
     	Resource to query [system, users]
   address
-        Address to agent specified as <address>, port will default to 17711 or <address:port>
+        Address to agent specified as <address[:port]> (default port 17711)
 `)
 }
 
