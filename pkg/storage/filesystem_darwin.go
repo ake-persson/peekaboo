@@ -4,6 +4,7 @@ package storage
 
 import (
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -11,8 +12,25 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 )
 
+var re = regexp.MustCompile("(.*) on .* \\((.*)\\)")
+
 func ListFilesystems() (*services.ListFilesystemsResponse, error) {
-	out, err := exec.Command("df", "-k", "-l", "-i").Output()
+	out, err := exec.Command("mount").Output()
+	if err != nil {
+		return nil, err
+	}
+
+	options := map[string][]string{}
+	for _, l := range strings.Split(string(out), "\n") {
+		a := re.FindStringSubmatch(l)
+		if len(a) < 2 {
+			continue
+		}
+
+		options[a[1]] = strings.Split(a[2], ", ")
+	}
+
+	out, err = exec.Command("df", "-k", "-l", "-i").Output()
 	if err != nil {
 		return nil, err
 	}
@@ -58,6 +76,13 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 
 		f.Inodes = f.InodesUsed + f.InodesFree
 		f.InodesUsedPct = float32(f.InodesUsed) / float32(f.Inodes) * 100
+
+		if v, ok := options[f.Filesystem]; ok {
+			if len(v) > 2 {
+				f.Type = v[0]
+				f.MountOptions = v[2:]
+			}
+		}
 
 		resp.Filesystems = append(resp.Filesystems, f)
 	}

@@ -17,4 +17,5 @@ message Filesystem {
   uint64 inodes_free = 9;
   float inodes_used_pct = 10;
   string mounted_on = 11;
+  repeated string mount_options = 12;
 }
