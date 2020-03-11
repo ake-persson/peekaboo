@@ -18,7 +18,7 @@ func ListUsers() (*services.ListUsersResponse, error) {
 		return nil, err
 	}
 
-	users := &services.ListUsersResponse{Users: []*resources.User{}}
+	resp := &services.ListUsersResponse{Users: []*resources.User{}}
 	u := &resources.User{}
 	i := 0
 	for _, l := range strings.Split(string(out), "\n") {
@@ -55,7 +55,7 @@ func ListUsers() (*services.ListUsersResponse, error) {
 			i++
 		case "":
 			if i >= 7 {
-				users.Users = append(users.Users, u)
+				resp.Users = append(resp.Users, u)
 			}
 			u = &resources.User{}
 			i = 0
@@ -64,5 +64,5 @@ func ListUsers() (*services.ListUsersResponse, error) {
 		}
 	}
 
-	return users, nil
+	return resp, nil
 }

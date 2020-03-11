@@ -4,6 +4,7 @@ package peekaboo.v1.services;
 
 option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services;services";
 
+import "pb/v1/resources/filesystem.proto";
 import "pb/v1/resources/group.proto";
 import "pb/v1/resources/system.proto";
 import "pb/v1/resources/user.proto";
@@ -12,6 +13,7 @@ service SystemService {
   rpc GetSystem(GetSystemRequest) returns (resources.System);
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
   rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse);
+  rpc ListFilesystems(ListFilesystemsRequest) returns (ListFilesystemsResponse);
 }
 
 message GetSystemRequest {}
@@ -26,4 +28,10 @@ message ListGroupsRequest {}
 
 message ListGroupsResponse {
   repeated resources.Group groups = 1;
+}
+
+message ListFilesystemsRequest {}
+
+message ListFilesystemsResponse {
+  repeated resources.Filesystem filesystems = 1;
 }

@@ -6,13 +6,14 @@ option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resou
 
 message Filesystem {
   string filesystem = 1;
+  // KB as in 1024 bytes
   uint64 size_kb = 2;
   uint64 used_kb = 3;
   uint64 free_kb = 4;
   float used_pct = 5;
-  uint64 size_inodes = 6;
-  uint64 used_inodes = 7;
-  uint64 free_inodes = 8;
-  float used_inodes_pct = 9;
-  string mount_on = 10;
+  uint64 inodes = 6;
+  uint64 inodes_used = 7;
+  uint64 inodes_free = 8;
+  float inodes_used_pct = 9;
+  string mounted_on = 10;
 }
