@@ -3,7 +3,6 @@
 package storage
 
 import (
-	"fmt"
 	"os/exec"
 	"regexp"
 	"strconv"
