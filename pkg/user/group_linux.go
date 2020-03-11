@@ -20,7 +20,7 @@ func ListGroups() (*services.ListGroupsResponse, error) {
 	resp := &services.ListGroupsResponse{Groups: []*resources.Group{}}
 	for _, l := range strings.Split(string(b), "\n") {
 		a := strings.Split(l, ":")
-		if len(a) < 3 {
+		if len(a) < 4 {
 			continue
 		}
 

@@ -21,7 +21,7 @@ func ListUsers() (*services.ListUsersResponse, error) {
 	for _, l := range strings.Split(string(b), "\n") {
 		a := strings.Split(l, ":")
 
-		if len(a) < 6 {
+		if len(a) < 7 {
 			continue
 		}
 

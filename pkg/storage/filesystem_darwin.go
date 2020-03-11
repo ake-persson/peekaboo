@@ -23,7 +23,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 	options := map[string][]string{}
 	for _, l := range strings.Split(string(out), "\n") {
 		a := re.FindStringSubmatch(l)
-		if len(a) < 2 {
+		if len(a) < 3 {
 			continue
 		}
 
@@ -42,7 +42,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 		}
 
 		a := strings.Fields(l)
-		if len(a) < 6 {
+		if len(a) < 9 {
 			continue
 		}
 
