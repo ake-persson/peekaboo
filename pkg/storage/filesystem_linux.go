@@ -12,7 +12,7 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 )
 
-var re = regexp.MustCompile("(.*) on .* type .* \\((.*)\\)")
+var re = regexp.MustCompile("(.*) on .* \\((.*)\\)")
 
 func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 	out, err := exec.Command("mount").Output()

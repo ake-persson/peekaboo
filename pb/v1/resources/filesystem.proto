@@ -18,4 +18,5 @@ message Filesystem {
   float inodes_used_pct = 10;
   string mounted_on = 11;
   repeated string mount_options = 12;
+  bool is_local = 13;
 }
