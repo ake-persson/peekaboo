@@ -50,6 +50,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 			Filesystem: a[0],
 			Type:       a[1],
 			MountedOn:  a[8],
+			IsLocal:    true,
 		}
 
 		var err error
