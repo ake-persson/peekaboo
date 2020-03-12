@@ -21,17 +21,20 @@ message GetSystemRequest {}
 message ListUsersRequest {}
 
 message ListUsersResponse {
-  repeated resources.User users = 1;
+  string Hostname = 1;
+  repeated resources.User users = 2;
 }
 
 message ListGroupsRequest {}
 
 message ListGroupsResponse {
-  repeated resources.Group groups = 1;
+  string Hostname = 1;
+  repeated resources.Group groups = 2;
 }
 
 message ListFilesystemsRequest {}
 
 message ListFilesystemsResponse {
-  repeated resources.Filesystem filesystems = 1;
+  string Hostname = 1;
+  repeated resources.Filesystem filesystems = 2;
 }

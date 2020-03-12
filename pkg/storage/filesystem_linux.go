@@ -35,7 +35,11 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 		return nil, err
 	}
 
-	resp := &services.ListFilesystemsResponse{Filesystems: []*resources.Filesystem{}}
+	hostname, _ := os.Hostname()
+	resp := &services.ListFilesystemsResponse{
+		Hostname:    hostname,
+		Filesystems: []*resources.Filesystem{},
+	}
 	for i, l := range strings.Split(string(out), "\n") {
 		if i < 1 {
 			continue

@@ -16,8 +16,6 @@ import (
 var re = regexp.MustCompile("(.*) on .* \\((.*)\\)")
 
 func ListFilesystems() (*services.ListFilesystemsResponse, error) {
-	hostname, _ := os.Hostname()
-
 	out, err := exec.Command("mount").Output()
 	if err != nil {
 		return nil, err
@@ -38,7 +36,11 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 		return nil, err
 	}
 
-	resp := &services.ListFilesystemsResponse{Filesystems: []*resources.Filesystem{}}
+	hostname, _ := os.Hostname()
+	resp := &services.ListFilesystemsResponse{
+		Hostname:    hostname,
+		Filesystems: []*resources.Filesystem{},
+	}
 	for i, l := range strings.Split(string(out), "\n") {
 		if i < 1 {
 			continue
