@@ -52,7 +52,7 @@ func main() {
 	conf := &config{}
 	var printVersion bool
 	flag.StringVar(&conf.InfoFile, "info-file", "~/etc/peekaboo.yml", "System info file")
-	flag.StringVar(&conf.Addr, "addr", ":17711", "Server address")
+	flag.StringVar(&conf.Addr, "addr", "localhost:17711", "Server address")
 	flag.StringVar(&conf.CatalogAddr, "ctlg-addr", "catalog:28657", "Catalog address")
 	flag.IntVar(&conf.KeepAlive, "keepalive", 60*5, "Keepalive intervall in seconds")
 	flag.BoolVar(&conf.Register, "register", false, "Register with Catalog")

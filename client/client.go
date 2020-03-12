@@ -94,19 +94,22 @@ func main() {
 		}
 
 		e := dialAgent(resource, addr, opts)
-		b, _ := json.MarshalIndent(e, "", "  ")
+		b, err := json.MarshalIndent(e, "", "  ")
+		if err != nil {
+			log.Print(err)
+		}
 		fmt.Println(string(b))
 	}
 }
 
-func dialAgent(resource string, addr string, opts []grpc.DialOption) envelope {
+func dialAgent(resource string, addr string, opts []grpc.DialOption) *envelope {
 	e := envelope{Address: addr}
 
 	// Connect to gRPC server.
 	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {
 		e.Error = err
-		return e
+		return &e
 	}
 	defer conn.Close()
 
@@ -128,5 +131,5 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) envelope {
 		e.Response, e.Error = client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
 	}
 
-	return e
+	return &e
 }

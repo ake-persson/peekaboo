@@ -19,4 +19,5 @@ message Filesystem {
   string mounted_on = 11;
   repeated string mount_options = 12;
   bool is_local = 13;
+  bool is_automounted = 14;
 }
