@@ -5,19 +5,20 @@ package peekaboo.v1.resources;
 option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resources";
 
 message Filesystem {
-  string filesystem = 1;
-  string type = 2;
+  string hostname = 1;
+  string filesystem = 2;
+  string type = 3;
   // KB as in 1024 bytes
-  uint64 size_kb = 3;
-  uint64 used_kb = 4;
-  uint64 free_kb = 5;
-  float used_pct = 6;
-  uint64 inodes = 7;
-  uint64 inodes_used = 8;
-  uint64 inodes_free = 9;
-  float inodes_used_pct = 10;
-  string mounted_on = 11;
-  repeated string mount_options = 12;
-  bool is_local = 13;
-  bool is_automounted = 14;
+  uint64 size_kb = 4;
+  uint64 used_kb = 5;
+  uint64 free_kb = 6;
+  float used_pct = 7;
+  uint64 inodes = 8;
+  uint64 inodes_used = 9;
+  uint64 inodes_free = 10;
+  float inodes_used_pct = 11;
+  string mounted_on = 12;
+  repeated string mount_options = 13;
+  bool is_local = 14;
+  bool is_automounted = 15;
 }

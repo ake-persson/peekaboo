@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gocarina/gocsv"
 	"github.com/mitchellh/go-homedir"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -23,6 +24,7 @@ type config struct {
 	CertFile string
 	KeyFile  string
 	CAFile   string
+	Format   string
 }
 
 type envelope struct {
@@ -53,6 +55,7 @@ func main() {
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
+	flag.StringVar(&conf.Format, "format", "json", "Output format [json,csv]")
 	flag.BoolVar(&printVersion, "version", false, "Version")
 	flag.Parse()
 
@@ -93,23 +96,17 @@ func main() {
 			addr += ":17711"
 		}
 
-		e := dialAgent(resource, addr, opts)
-		b, err := json.MarshalIndent(e, "", "  ")
-		if err != nil {
+		if err := dialAgent(resource, conf.Format, addr, opts); err != nil {
 			log.Print(err)
 		}
-		fmt.Println(string(b))
 	}
 }
 
-func dialAgent(resource string, addr string, opts []grpc.DialOption) *envelope {
-	e := envelope{Address: addr}
-
+func dialAgent(resource string, format string, addr string, opts []grpc.DialOption) error {
 	// Connect to gRPC server.
 	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {
-		e.Error = err
-		return &e
+		return err
 	}
 	defer conn.Close()
 
@@ -122,14 +119,32 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) *envelope {
 
 	switch resource {
 	case "system":
-		e.Response, e.Error = client.GetSystem(ctx, &services.GetSystemRequest{})
+		//		e.Response, e.Error = client.GetSystem(ctx, &services.GetSystemRequest{})
 	case "users":
-		e.Response, e.Error = client.ListUsers(ctx, &services.ListUsersRequest{})
+		//		e.Response, e.Error = client.ListUsers(ctx, &services.ListUsersRequest{})
 	case "groups":
-		e.Response, e.Error = client.ListGroups(ctx, &services.ListGroupsRequest{})
+		//		e.Response, e.Error = client.ListGroups(ctx, &services.ListGroupsRequest{})
 	case "filesystems":
-		e.Response, e.Error = client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
+		v, err := client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
+		if err != nil {
+			return err
+		}
+
+		switch format {
+		case "json":
+			b, err := json.MarshalIndent(v, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(b))
+		case "csv":
+			csv, err := gocsv.MarshalString(v.Filesystems)
+			if err != nil {
+				return err
+			}
+			fmt.Println(csv)
+		}
 	}
 
-	return &e
+	return nil
 }

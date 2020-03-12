@@ -3,6 +3,7 @@
 package storage
 
 import (
+	"os"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -15,6 +16,8 @@ import (
 var re = regexp.MustCompile("(.*) on .* \\((.*)\\)")
 
 func ListFilesystems() (*services.ListFilesystemsResponse, error) {
+	hostname, _ := os.Hostname()
+
 	out, err := exec.Command("mount").Output()
 	if err != nil {
 		return nil, err
@@ -51,6 +54,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 		}
 
 		f := &resources.Filesystem{
+			Hostname:   hostname,
 			Filesystem: a[0],
 			MountedOn:  a[8],
 		}

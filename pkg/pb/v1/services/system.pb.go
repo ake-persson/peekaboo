@@ -26,9 +26,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type GetSystemRequest struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *GetSystemRequest) Reset()         { *m = GetSystemRequest{} }
@@ -57,9 +57,9 @@ func (m *GetSystemRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_GetSystemRequest proto.InternalMessageInfo
 
 type ListUsersRequest struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *ListUsersRequest) Reset()         { *m = ListUsersRequest{} }
@@ -88,10 +88,10 @@ func (m *ListUsersRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_ListUsersRequest proto.InternalMessageInfo
 
 type ListUsersResponse struct {
-	Users                []*resources.User `protobuf:"bytes,1,rep,name=users,proto3" json:"users"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+	Users                []*resources.User `protobuf:"bytes,1,rep,name=users,proto3" json:"users" csv:"users" yaml:"users"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte            `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32             `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *ListUsersResponse) Reset()         { *m = ListUsersResponse{} }
@@ -127,9 +127,9 @@ func (m *ListUsersResponse) GetUsers() []*resources.User {
 }
 
 type ListGroupsRequest struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *ListGroupsRequest) Reset()         { *m = ListGroupsRequest{} }
@@ -158,10 +158,10 @@ func (m *ListGroupsRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_ListGroupsRequest proto.InternalMessageInfo
 
 type ListGroupsResponse struct {
-	Groups               []*resources.Group `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
+	Groups               []*resources.Group `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups" csv:"groups" yaml:"groups"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte             `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32              `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *ListGroupsResponse) Reset()         { *m = ListGroupsResponse{} }
@@ -197,9 +197,9 @@ func (m *ListGroupsResponse) GetGroups() []*resources.Group {
 }
 
 type ListFilesystemsRequest struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *ListFilesystemsRequest) Reset()         { *m = ListFilesystemsRequest{} }
@@ -228,10 +228,10 @@ func (m *ListFilesystemsRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_ListFilesystemsRequest proto.InternalMessageInfo
 
 type ListFilesystemsResponse struct {
-	Filesystems          []*resources.Filesystem `protobuf:"bytes,1,rep,name=filesystems,proto3" json:"filesystems"`
-	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
-	XXX_unrecognized     []byte                  `json:"-"`
-	XXX_sizecache        int32                   `json:"-"`
+	Filesystems          []*resources.Filesystem `protobuf:"bytes,1,rep,name=filesystems,proto3" json:"filesystems" csv:"filesystems" yaml:"filesystems"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte                  `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32                   `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *ListFilesystemsResponse) Reset()         { *m = ListFilesystemsResponse{} }
