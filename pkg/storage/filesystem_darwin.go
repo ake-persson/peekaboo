@@ -28,7 +28,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 			continue
 		}
 
-		options[a[1]] = strings.Split(a[2], ", ")
+		options[strings.TrimPrefix(a[1], "map ")] = strings.Split(a[2], ", ")
 	}
 
 	out, err = exec.Command("df", "-k", "-i").Output()
@@ -97,7 +97,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 				switch v[1] {
 				case "local":
 					f.IsLocal = true
-				case "autofs":
+				case "automounted":
 					f.IsAutomounted = true
 				}
 				f.MountOptions = v[2:]

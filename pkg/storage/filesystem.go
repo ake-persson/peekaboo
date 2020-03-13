@@ -19,9 +19,9 @@ func FilesystemsToStringTable(hostname string, fs []*resources.Filesystem) [][]s
 		r[0] = hostname
 		r[1] = f.Filesystem
 		r[2] = f.Type
-		r[3] = fmt.Sprintf("%d KB", f.SizeKb)
-		r[4] = fmt.Sprintf("%d KB", f.UsedKb)
-		r[5] = fmt.Sprintf("%d KB", f.FreeKb)
+		r[3] = fmt.Sprintf("%dK", f.SizeKb)
+		r[4] = fmt.Sprintf("%dK", f.UsedKb)
+		r[5] = fmt.Sprintf("%dK", f.FreeKb)
 		r[6] = fmt.Sprintf("%.2f%%", f.UsedPct)
 		r[7] = fmt.Sprint(f.Inodes)
 		r[8] = fmt.Sprint(f.InodesFree)
