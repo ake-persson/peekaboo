@@ -56,7 +56,6 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 		}
 
 		f := &resources.Filesystem{
-			Hostname:   hostname,
 			Filesystem: a[0],
 			MountedOn:  a[8],
 		}

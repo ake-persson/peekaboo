@@ -2,20 +2,22 @@ package main
 
 import (
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strings"
+	"text/tabwriter"
 	"time"
 
-	"github.com/gocarina/gocsv"
 	"github.com/mitchellh/go-homedir"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
+	"github.com/peekaboo-labs/peekaboo/pkg/storage"
 )
 
 type config struct {
@@ -55,7 +57,7 @@ func main() {
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
-	flag.StringVar(&conf.Format, "format", "json", "Output format [json,csv]")
+	flag.StringVar(&conf.Format, "format", "json", "Output format [json,csv,table]")
 	flag.BoolVar(&printVersion, "version", false, "Version")
 	flag.Parse()
 
@@ -138,11 +140,16 @@ func dialAgent(resource string, format string, addr string, opts []grpc.DialOpti
 			}
 			fmt.Println(string(b))
 		case "csv":
-			csv, err := gocsv.MarshalString(v.Filesystems)
-			if err != nil {
+			w := csv.NewWriter(os.Stdout)
+			if err := w.WriteAll(storage.FilesystemsToStringTable(v.Hostname, v.Filesystems)); err != nil {
 				return err
 			}
-			fmt.Println(csv)
+		case "table":
+			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+			for _, r := range storage.FilesystemsToStringTable(v.Hostname, v.Filesystems) {
+				fmt.Fprintln(w, strings.Join(r, "\t"))
+			}
+			w.Flush()
 		}
 	}
 
