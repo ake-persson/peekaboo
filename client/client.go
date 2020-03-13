@@ -18,6 +18,7 @@ import (
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 	"github.com/peekaboo-labs/peekaboo/pkg/storage"
+	"github.com/peekaboo-labs/peekaboo/pkg/user"
 )
 
 type config struct {
@@ -93,18 +94,18 @@ func main() {
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	}
 
-	for _, addr := range addresses {
+	for i, addr := range addresses {
 		if !strings.Contains(addr, ":") {
 			addr += ":17711"
 		}
 
-		if err := dialAgent(resource, conf.Format, addr, opts); err != nil {
+		if err := dialAgent(i, resource, conf.Format, addr, opts); err != nil {
 			log.Print(err)
 		}
 	}
 }
 
-func dialAgent(resource string, format string, addr string, opts []grpc.DialOption) error {
+func dialAgent(index int, resource string, format string, addr string, opts []grpc.DialOption) error {
 	// Connect to gRPC server.
 	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {
@@ -123,9 +124,75 @@ func dialAgent(resource string, format string, addr string, opts []grpc.DialOpti
 	case "system":
 		//		e.Response, e.Error = client.GetSystem(ctx, &services.GetSystemRequest{})
 	case "users":
-		//		e.Response, e.Error = client.ListUsers(ctx, &services.ListUsersRequest{})
+		v, err := client.ListUsers(ctx, &services.ListUsersRequest{})
+		if err != nil {
+			return err
+		}
+
+		switch format {
+		case "json":
+			b, err := json.MarshalIndent(v, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(b))
+		case "csv":
+			w := csv.NewWriter(os.Stdout)
+			h, t := user.UsersToStringTable(v.Hostname, v.Users)
+			if index == 0 {
+				if err := w.Write(h); err != nil {
+					return err
+				}
+			}
+			if err := w.WriteAll(t); err != nil {
+				return err
+			}
+		case "table":
+			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+			h, t := user.UsersToStringTable(v.Hostname, v.Users)
+			if index == 0 {
+				fmt.Fprintln(w, strings.Join(h, "\t"))
+			}
+			for _, r := range t {
+				fmt.Fprintln(w, strings.Join(r, "\t"))
+			}
+			w.Flush()
+		}
 	case "groups":
-		//		e.Response, e.Error = client.ListGroups(ctx, &services.ListGroupsRequest{})
+		v, err := client.ListGroups(ctx, &services.ListGroupsRequest{})
+		if err != nil {
+			return err
+		}
+
+		switch format {
+		case "json":
+			b, err := json.MarshalIndent(v, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(b))
+		case "csv":
+			w := csv.NewWriter(os.Stdout)
+			h, t := user.GroupsToStringTable(v.Hostname, v.Groups)
+			if index == 0 {
+				if err := w.Write(h); err != nil {
+					return err
+				}
+			}
+			if err := w.WriteAll(t); err != nil {
+				return err
+			}
+		case "table":
+			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+			h, t := user.GroupsToStringTable(v.Hostname, v.Groups)
+			if index == 0 {
+				fmt.Fprintln(w, strings.Join(h, "\t"))
+			}
+			for _, r := range t {
+				fmt.Fprintln(w, strings.Join(r, "\t"))
+			}
+			w.Flush()
+		}
 	case "filesystems":
 		v, err := client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
 		if err != nil {
@@ -141,12 +208,22 @@ func dialAgent(resource string, format string, addr string, opts []grpc.DialOpti
 			fmt.Println(string(b))
 		case "csv":
 			w := csv.NewWriter(os.Stdout)
-			if err := w.WriteAll(storage.FilesystemsToStringTable(v.Hostname, v.Filesystems)); err != nil {
+			h, t := storage.FilesystemsToStringTable(v.Hostname, v.Filesystems)
+			if index == 0 {
+				if err := w.Write(h); err != nil {
+					return err
+				}
+			}
+			if err := w.WriteAll(t); err != nil {
 				return err
 			}
 		case "table":
 			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-			for _, r := range storage.FilesystemsToStringTable(v.Hostname, v.Filesystems) {
+			h, t := storage.FilesystemsToStringTable(v.Hostname, v.Filesystems)
+			if index == 0 {
+				fmt.Fprintln(w, strings.Join(h, "\t"))
+			}
+			for _, r := range t {
 				fmt.Fprintln(w, strings.Join(r, "\t"))
 			}
 			w.Flush()

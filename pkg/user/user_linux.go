@@ -4,6 +4,7 @@ package user
 
 import (
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 
@@ -17,7 +18,11 @@ func ListUsers() (*services.ListUsersResponse, error) {
 		return nil, err
 	}
 
-	resp := &services.ListUsersResponse{Users: []*resources.User{}}
+	hostname, _ := os.Hostname()
+	resp := &services.ListUsersResponse{
+		Hostname: hostname,
+		Users:    []*resources.User{},
+	}
 	for _, l := range strings.Split(string(b), "\n") {
 		a := strings.Split(l, ":")
 

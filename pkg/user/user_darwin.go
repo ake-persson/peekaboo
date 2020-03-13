@@ -4,6 +4,7 @@ package user
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -18,7 +19,11 @@ func ListUsers() (*services.ListUsersResponse, error) {
 		return nil, err
 	}
 
-	resp := &services.ListUsersResponse{Users: []*resources.User{}}
+	hostname, _ := os.Hostname()
+	resp := &services.ListUsersResponse{
+		Hostname: hostname,
+		Users:    []*resources.User{},
+	}
 	u := &resources.User{}
 	i := 0
 	for _, l := range strings.Split(string(out), "\n") {

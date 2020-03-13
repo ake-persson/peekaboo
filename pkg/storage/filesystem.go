@@ -7,13 +7,10 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
 )
 
-func FilesystemsToStringTable(hostname string, fs []*resources.Filesystem) [][]string {
-	t := [][]string{
-		{"hostname", "filesystem", "type", "size_kb", "used_kb",
-			"free_kb", "used_pct", "inodes", "inodes_free",
-			"inodes_used", "inodes_used_pct", "mounted_on",
-			"mount_options", "is_local", "is_automounted"},
-	}
+func FilesystemsToStringTable(hostname string, fs []*resources.Filesystem) ([]string, [][]string) {
+	h := []string{"hostname", "filesystem", "type", "size_kb", "used_kb", "free_kb", "used_pct", "inodes",
+		"inodes_free", "inodes_used", "inodes_used_pct", "mounted_on", "mount_options", "is_local", "is_automounted"}
+	t := make([][]string, 0)
 	for _, f := range fs {
 		r := make([]string, 15)
 		r[0] = hostname
@@ -33,5 +30,5 @@ func FilesystemsToStringTable(hostname string, fs []*resources.Filesystem) [][]s
 		r[14] = fmt.Sprintf("%t", f.IsAutomounted)
 		t = append(t, r)
 	}
-	return t
+	return h, t
 }
