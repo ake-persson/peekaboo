@@ -3,6 +3,7 @@
 package storage
 
 import (
+	"os"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -30,7 +31,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 		options[a[1]] = strings.Split(a[2], ",")
 	}
 
-	out, err = exec.Command("df", "-k", "-l", "--output=source,fstype,size,used,avail,itotal,iused,iavail,target").Output()
+	out, err = exec.Command("df", "-k", "--output=source,fstype,size,used,avail,itotal,iused,iavail,target").Output()
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +55,6 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 			Filesystem: a[0],
 			Type:       a[1],
 			MountedOn:  a[8],
-			IsLocal:    true,
 		}
 
 		var err error
