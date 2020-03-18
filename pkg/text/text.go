@@ -6,6 +6,8 @@ import (
 	"io"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/mickep76/color"
 )
 
 type Table struct {
@@ -25,6 +27,28 @@ func (ts Tables) PrintTable(output io.Writer) {
 	for _, t := range ts {
 		for _, r := range t.Rows {
 			fmt.Fprintln(w, strings.Join(r, "\t"))
+		}
+	}
+
+	w.Flush()
+}
+
+func (ts Tables) PrintVertTable(output io.Writer) {
+	if len(ts) < 1 {
+		return
+	}
+
+	w := tabwriter.NewWriter(output, 0, 0, 2, ' ', 0)
+	for _, t := range ts {
+		for _, r := range t.Rows {
+			for i, c := range r {
+				if i == 0 {
+					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", color.LightCyan, t.Headers[i], color.LightYellow, c, color.Reset)
+				} else {
+					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", color.Cyan, t.Headers[i], color.Yellow, c, color.Reset)
+				}
+			}
+			fmt.Fprintln(w)
 		}
 	}
 
