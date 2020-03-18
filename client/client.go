@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	//	"encoding/json"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -60,7 +60,7 @@ func main() {
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
-	flag.StringVar(&conf.Format, "format", "json", "Output format [json,csv,table,pretty]")
+	flag.StringVar(&conf.Format, "fmt", "json", "Output format [json,csv,table,vtable]")
 	flag.StringVar(&conf.Fields, "fields", "", "Comma separate list of fields to output")
 	flag.BoolVar(&printVersion, "version", false, "Version")
 	flag.Parse()
@@ -98,20 +98,21 @@ func main() {
 	}
 
 	tables := text.Tables{}
+	responses := []interface{}{}
 	for _, addr := range addresses {
 		if !strings.Contains(addr, ":") {
 			addr += ":17711"
 		}
 
 		switch conf.Format {
-		/*
-			case "json":
-				if err := dialAgent(i, resource, conf.Format, strings.Split(conf.Fields, ","), addr, opts); err != nil {
-					log.Print(err)
-				}
-		*/
-		case "csv", "table":
-			t, err := dialAgent(resource, addr, opts)
+		case "json":
+			resp, err := dialAgent(resource, addr, opts)
+			if err != nil {
+				log.Print(err)
+			}
+			responses = append(responses, resp)
+		case "csv", "table", "vtable":
+			t, err := dialAgentTable(resource, addr, opts)
 			if err != nil {
 				log.Print(err)
 			}
@@ -122,14 +123,48 @@ func main() {
 	}
 
 	switch conf.Format {
+	case "json":
+		b, _ := json.MarshalIndent(responses, "", "  ")
+		fmt.Print(string(b))
 	case "csv":
 		tables.PrintCSV(os.Stdout)
 	case "table":
 		tables.PrintTable(os.Stdout)
+	case "vtable":
+		tables.PrintVertTable(os.Stdout)
 	}
 }
 
-func dialAgent(resource string, addr string, opts []grpc.DialOption) (*text.Table, error) {
+func dialAgent(resource string, addr string, opts []grpc.DialOption) (interface{}, error) {
+	// Connect to gRPC server.
+	conn, err := grpc.Dial(addr, opts...)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	// Initialize new client.
+	client := services.NewSystemServiceClient(conn)
+
+	// Create context for gRPC calls.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	switch resource {
+	case "system":
+		return client.GetSystem(ctx, &services.GetSystemRequest{})
+	case "users":
+		return client.ListUsers(ctx, &services.ListUsersRequest{})
+	case "groups":
+		return client.ListGroups(ctx, &services.ListGroupsRequest{})
+	case "filesystems":
+		return client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
+	}
+
+	return nil, nil
+}
+
+func dialAgentTable(resource string, addr string, opts []grpc.DialOption) (*text.Table, error) {
 	// Connect to gRPC server.
 	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {

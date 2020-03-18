@@ -31,6 +31,24 @@ func (ts Tables) PrintTable(output io.Writer) {
 	w.Flush()
 }
 
+func (ts Tables) PrintVertTable(output io.Writer) {
+	if len(ts) < 1 {
+		return
+	}
+
+	w := tabwriter.NewWriter(output, 0, 0, 2, ' ', 0)
+	for _, t := range ts {
+		for _, r := range t.Rows {
+			for i, c := range r {
+				fmt.Fprintf(w, "%s\t%s\n", t.Headers[i], c)
+			}
+			fmt.Fprintln(w)
+		}
+	}
+
+	w.Flush()
+}
+
 func (ts Tables) PrintCSV(output io.Writer) {
 	if len(ts) < 1 {
 		return
