@@ -40,6 +40,15 @@ type envelope struct {
 
 var version = "undefined"
 
+func inList(a string, l []string) bool {
+	for _, b := range l {
+		if a == b {
+			return true
+		}
+	}
+	return false
+}
+
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource> <address...>\n", os.Args[0])
 	flag.PrintDefaults()
@@ -83,6 +92,16 @@ func main() {
 	conf.CertFile, _ = homedir.Expand(conf.CertFile)
 	conf.KeyFile, _ = homedir.Expand(conf.KeyFile)
 	conf.CAFile, _ = homedir.Expand(conf.CAFile)
+
+	// Check resource.
+	if !inList(resource, []string{"system", "users", "groups", "filesystems"}) {
+		log.Fatalf("unknown resource: %s", resource)
+	}
+
+	// Check format.
+	if !inList(conf.Format, []string{"json", "csv", "table", "vtable"}) {
+		log.Fatalf("unknown format: %s", conf.Format)
+	}
 
 	opts := []grpc.DialOption{grpc.WithBlock()}
 	if conf.NoTLS {
@@ -161,7 +180,7 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) (interface{
 		return client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
 	}
 
-	return nil, nil
+	return nil, fmt.Errorf("unknown resource: %s", resource)
 }
 
 func dialAgentTable(resource string, addr string, opts []grpc.DialOption) (*text.Table, error) {
@@ -206,5 +225,5 @@ func dialAgentTable(resource string, addr string, opts []grpc.DialOption) (*text
 		return filesystem.ToTable(resp.Hostname, resp.Filesystems), nil
 	}
 
-	return nil, nil
+	return nil, fmt.Errorf("unknown resource: %s", resource)
 }
