@@ -18,6 +18,7 @@ import (
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 	"github.com/peekaboo-labs/peekaboo/pkg/storage"
+	"github.com/peekaboo-labs/peekaboo/pkg/system"
 	"github.com/peekaboo-labs/peekaboo/pkg/user"
 )
 
@@ -28,6 +29,7 @@ type config struct {
 	KeyFile  string
 	CAFile   string
 	Format   string
+	Fields   string
 }
 
 type envelope struct {
@@ -58,7 +60,8 @@ func main() {
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
-	flag.StringVar(&conf.Format, "format", "json", "Output format [json,csv,table]")
+	flag.StringVar(&conf.Format, "format", "json", "Output format [json,csv,table,pretty]")
+	flag.StringVar(&conf.Fields, "fields", "", "Comma separate list of fields to output")
 	flag.BoolVar(&printVersion, "version", false, "Version")
 	flag.Parse()
 
@@ -99,13 +102,13 @@ func main() {
 			addr += ":17711"
 		}
 
-		if err := dialAgent(i, resource, conf.Format, addr, opts); err != nil {
+		if err := dialAgent(i, resource, conf.Format, strings.Split(conf.Fields, ","), addr, opts); err != nil {
 			log.Print(err)
 		}
 	}
 }
 
-func dialAgent(index int, resource string, format string, addr string, opts []grpc.DialOption) error {
+func dialAgent(index int, resource string, format string, fields []string, addr string, opts []grpc.DialOption) error {
 	// Connect to gRPC server.
 	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {
@@ -120,9 +123,51 @@ func dialAgent(index int, resource string, format string, addr string, opts []gr
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
+	switch format {
+	case "csv":
+	case "table":
+	case "json":
+	}
+
 	switch resource {
 	case "system":
-		//		e.Response, e.Error = client.GetSystem(ctx, &services.GetSystemRequest{})
+		v, err := client.GetSystem(ctx, &services.GetSystemRequest{})
+		if err != nil {
+			return err
+		}
+
+		switch format {
+		case "json":
+			b, err := json.MarshalIndent(v, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(b))
+		case "csv":
+			w := csv.NewWriter(os.Stdout)
+			h, t := system.SystemToStringTable(v)
+			if index == 0 {
+				if err := w.Write(h); err != nil {
+					return err
+				}
+			}
+			if err := w.WriteAll(t); err != nil {
+				return err
+			}
+		case "table":
+			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+			h, t := system.SystemToStringTable(v)
+			if index == 0 {
+				fmt.Fprintln(w, strings.Join(h, "\t"))
+			}
+			for _, r := range t {
+				fmt.Fprintln(w, strings.Join(r, "\t"))
+			}
+			w.Flush()
+		case "vtable":
+			system.PrintSystem(v)
+			fmt.Println()
+		}
 	case "users":
 		v, err := client.ListUsers(ctx, &services.ListUsersRequest{})
 		if err != nil {
