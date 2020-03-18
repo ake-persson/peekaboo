@@ -21,14 +21,14 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Rack struct {
-	Rack                 string   `protobuf:"bytes,1,opt,name=rack,proto3" json:"rack"`
-	StartPosition        int32    `protobuf:"varint,2,opt,name=start_position,json=startPosition,proto3" json:"start_position"`
-	StartPositionTop     bool     `protobuf:"varint,3,opt,name=start_position_top,json=startPositionTop,proto3" json:"start_position_top"`
-	Height               int32    `protobuf:"varint,4,opt,name=height,proto3" json:"height"`
-	Site                 string   `protobuf:"bytes,5,opt,name=site,proto3" json:"site"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Rack                 string   `protobuf:"bytes,1,opt,name=rack,proto3" json:"rack" csv:"rack" yaml:"rack"`
+	StartPosition        int32    `protobuf:"varint,2,opt,name=start_position,json=startPosition,proto3" json:"start_position" csv:"start_position" yaml:"start_position"`
+	StartPositionTop     bool     `protobuf:"varint,3,opt,name=start_position_top,json=startPositionTop,proto3" json:"start_position_top" csv:"start_position_top" yaml:"start_position_top"`
+	Height               int32    `protobuf:"varint,4,opt,name=height,proto3" json:"height" csv:"height" yaml:"height"`
+	Site                 string   `protobuf:"bytes,5,opt,name=site,proto3" json:"site" csv:"site" yaml:"site"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *Rack) Reset()         { *m = Rack{} }

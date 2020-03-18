@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	//	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -14,7 +14,12 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
+	"github.com/peekaboo-labs/peekaboo/pkg/filesystem"
+	"github.com/peekaboo-labs/peekaboo/pkg/group"
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
+	"github.com/peekaboo-labs/peekaboo/pkg/system"
+	"github.com/peekaboo-labs/peekaboo/pkg/text"
+	"github.com/peekaboo-labs/peekaboo/pkg/user"
 )
 
 type config struct {
@@ -23,6 +28,8 @@ type config struct {
 	CertFile string
 	KeyFile  string
 	CAFile   string
+	Format   string
+	Fields   string
 }
 
 type envelope struct {
@@ -53,6 +60,8 @@ func main() {
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
+	flag.StringVar(&conf.Format, "format", "json", "Output format [json,csv,table,pretty]")
+	flag.StringVar(&conf.Fields, "fields", "", "Comma separate list of fields to output")
 	flag.BoolVar(&printVersion, "version", false, "Version")
 	flag.Parse()
 
@@ -88,28 +97,43 @@ func main() {
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	}
 
+	tables := text.Tables{}
 	for _, addr := range addresses {
 		if !strings.Contains(addr, ":") {
 			addr += ":17711"
 		}
 
-		e := dialAgent(resource, addr, opts)
-		b, err := json.MarshalIndent(e, "", "  ")
-		if err != nil {
-			log.Print(err)
+		switch conf.Format {
+		/*
+			case "json":
+				if err := dialAgent(i, resource, conf.Format, strings.Split(conf.Fields, ","), addr, opts); err != nil {
+					log.Print(err)
+				}
+		*/
+		case "csv", "table":
+			t, err := dialAgent(resource, addr, opts)
+			if err != nil {
+				log.Print(err)
+			}
+			tables = append(tables, t)
+		default:
+			log.Fatalf("unknown output format: %s", conf.Format)
 		}
-		fmt.Println(string(b))
+	}
+
+	switch conf.Format {
+	case "csv":
+		tables.PrintCSV(os.Stdout)
+	case "table":
+		tables.PrintTable(os.Stdout)
 	}
 }
 
-func dialAgent(resource string, addr string, opts []grpc.DialOption) *envelope {
-	e := envelope{Address: addr}
-
+func dialAgent(resource string, addr string, opts []grpc.DialOption) (*text.Table, error) {
 	// Connect to gRPC server.
 	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {
-		e.Error = err
-		return &e
+		return nil, err
 	}
 	defer conn.Close()
 
@@ -122,14 +146,30 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) *envelope {
 
 	switch resource {
 	case "system":
-		e.Response, e.Error = client.GetSystem(ctx, &services.GetSystemRequest{})
+		resp, err := client.GetSystem(ctx, &services.GetSystemRequest{})
+		if err != nil {
+			return nil, err
+		}
+		return system.ToTable(resp), nil
 	case "users":
-		e.Response, e.Error = client.ListUsers(ctx, &services.ListUsersRequest{})
+		resp, err := client.ListUsers(ctx, &services.ListUsersRequest{})
+		if err != nil {
+			return nil, err
+		}
+		return user.ToTable(resp.Hostname, resp.Users), nil
 	case "groups":
-		e.Response, e.Error = client.ListGroups(ctx, &services.ListGroupsRequest{})
+		resp, err := client.ListGroups(ctx, &services.ListGroupsRequest{})
+		if err != nil {
+			return nil, err
+		}
+		return group.ToTable(resp.Hostname, resp.Groups), nil
 	case "filesystems":
-		e.Response, e.Error = client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
+		resp, err := client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
+		if err != nil {
+			return nil, err
+		}
+		return filesystem.ToTable(resp.Hostname, resp.Filesystems), nil
 	}
 
-	return &e
+	return nil, nil
 }

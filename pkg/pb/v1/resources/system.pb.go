@@ -22,43 +22,43 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type System struct {
-	Created              *timestamp.Timestamp `protobuf:"bytes,1,opt,name=created,proto3" json:"created"`
-	Updated              *timestamp.Timestamp `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated"`
-	LastSeen             *timestamp.Timestamp `protobuf:"bytes,3,opt,name=last_seen,json=lastSeen,proto3" json:"last_seen"`
-	Hostname             string               `protobuf:"bytes,4,opt,name=hostname,proto3" json:"hostname"`
-	Address              string               `protobuf:"bytes,5,opt,name=address,proto3" json:"address"`
-	Manufacturer         string               `protobuf:"bytes,6,opt,name=manufacturer,proto3" json:"manufacturer"`
-	Product              string               `protobuf:"bytes,7,opt,name=product,proto3" json:"product"`
-	ProductVersion       string               `protobuf:"bytes,8,opt,name=product_version,json=productVersion,proto3" json:"product_version"`
-	SerialNumber         string               `protobuf:"bytes,9,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number"`
-	BiosVendor           string               `protobuf:"bytes,10,opt,name=bios_vendor,json=biosVendor,proto3" json:"bios_vendor"`
-	BiosDate             string               `protobuf:"bytes,11,opt,name=bios_date,json=biosDate,proto3" json:"bios_date"`
-	BiosVersion          string               `protobuf:"bytes,12,opt,name=bios_version,json=biosVersion,proto3" json:"bios_version"`
-	BootRomVersion       string               `protobuf:"bytes,13,opt,name=boot_rom_version,json=bootRomVersion,proto3" json:"boot_rom_version"`
-	SmcVersion           string               `protobuf:"bytes,14,opt,name=smc_version,json=smcVersion,proto3" json:"smc_version"`
-	MemoryGb             int32                `protobuf:"varint,15,opt,name=memory_gb,json=memoryGb,proto3" json:"memory_gb"`
-	CpuCoresPerSocket    int32                `protobuf:"varint,16,opt,name=cpu_cores_per_socket,json=cpuCoresPerSocket,proto3" json:"cpu_cores_per_socket"`
-	CpuPhysicalCores     int32                `protobuf:"varint,17,opt,name=cpu_physical_cores,json=cpuPhysicalCores,proto3" json:"cpu_physical_cores"`
-	CpuLogicalCores      int32                `protobuf:"varint,18,opt,name=cpu_logical_cores,json=cpuLogicalCores,proto3" json:"cpu_logical_cores"`
-	CpuSockets           int32                `protobuf:"varint,19,opt,name=cpu_sockets,json=cpuSockets,proto3" json:"cpu_sockets"`
-	CpuThreadsPerCore    int32                `protobuf:"varint,20,opt,name=cpu_threads_per_core,json=cpuThreadsPerCore,proto3" json:"cpu_threads_per_core"`
-	CpuModel             string               `protobuf:"bytes,21,opt,name=cpu_model,json=cpuModel,proto3" json:"cpu_model"`
-	CpuFlags             string               `protobuf:"bytes,22,opt,name=cpu_flags,json=cpuFlags,proto3" json:"cpu_flags"`
-	Os                   string               `protobuf:"bytes,23,opt,name=os,proto3" json:"os"`
-	OsVersion            string               `protobuf:"bytes,24,opt,name=os_version,json=osVersion,proto3" json:"os_version"`
-	OsBuild              string               `protobuf:"bytes,25,opt,name=os_build,json=osBuild,proto3" json:"os_build"`
-	OsDescr              string               `protobuf:"bytes,26,opt,name=os_descr,json=osDescr,proto3" json:"os_descr"`
-	Kernel               string               `protobuf:"bytes,27,opt,name=kernel,proto3" json:"kernel"`
-	KernelVersion        string               `protobuf:"bytes,28,opt,name=kernel_version,json=kernelVersion,proto3" json:"kernel_version"`
-	KernelRelease        string               `protobuf:"bytes,29,opt,name=kernel_release,json=kernelRelease,proto3" json:"kernel_release"`
-	Description          string               `protobuf:"bytes,30,opt,name=description,proto3" json:"description"`
-	Site                 string               `protobuf:"bytes,31,opt,name=site,proto3" json:"site"`
-	Rack                 string               `protobuf:"bytes,32,opt,name=rack,proto3" json:"rack"`
-	RackPosition         int32                `protobuf:"varint,33,opt,name=rack_position,json=rackPosition,proto3" json:"rack_position"`
-	RackSize             int32                `protobuf:"varint,34,opt,name=rack_size,json=rackSize,proto3" json:"rack_size"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
+	Created              *timestamp.Timestamp `protobuf:"bytes,1,opt,name=created,proto3" json:"created" csv:"created" yaml:"created"`
+	Updated              *timestamp.Timestamp `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated" csv:"updated" yaml:"updated"`
+	LastSeen             *timestamp.Timestamp `protobuf:"bytes,3,opt,name=last_seen,json=lastSeen,proto3" json:"last_seen" csv:"last_seen" yaml:"last_seen"`
+	Hostname             string               `protobuf:"bytes,4,opt,name=hostname,proto3" json:"hostname" csv:"hostname" yaml:"hostname"`
+	Address              string               `protobuf:"bytes,5,opt,name=address,proto3" json:"address" csv:"address" yaml:"address"`
+	Manufacturer         string               `protobuf:"bytes,6,opt,name=manufacturer,proto3" json:"manufacturer" csv:"manufacturer" yaml:"manufacturer"`
+	Product              string               `protobuf:"bytes,7,opt,name=product,proto3" json:"product" csv:"product" yaml:"product"`
+	ProductVersion       string               `protobuf:"bytes,8,opt,name=product_version,json=productVersion,proto3" json:"product_version" csv:"product_version" yaml:"product_version"`
+	SerialNumber         string               `protobuf:"bytes,9,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number" csv:"serial_number" yaml:"serial_number"`
+	BiosVendor           string               `protobuf:"bytes,10,opt,name=bios_vendor,json=biosVendor,proto3" json:"bios_vendor" csv:"bios_vendor" yaml:"bios_vendor"`
+	BiosDate             string               `protobuf:"bytes,11,opt,name=bios_date,json=biosDate,proto3" json:"bios_date" csv:"bios_date" yaml:"bios_date"`
+	BiosVersion          string               `protobuf:"bytes,12,opt,name=bios_version,json=biosVersion,proto3" json:"bios_version" csv:"bios_version" yaml:"bios_version"`
+	BootRomVersion       string               `protobuf:"bytes,13,opt,name=boot_rom_version,json=bootRomVersion,proto3" json:"boot_rom_version" csv:"boot_rom_version" yaml:"boot_rom_version"`
+	SmcVersion           string               `protobuf:"bytes,14,opt,name=smc_version,json=smcVersion,proto3" json:"smc_version" csv:"smc_version" yaml:"smc_version"`
+	MemoryGb             int32                `protobuf:"varint,15,opt,name=memory_gb,json=memoryGb,proto3" json:"memory_gb" csv:"memory_gb" yaml:"memory_gb"`
+	CpuCoresPerSocket    int32                `protobuf:"varint,16,opt,name=cpu_cores_per_socket,json=cpuCoresPerSocket,proto3" json:"cpu_cores_per_socket" csv:"cpu_cores_per_socket" yaml:"cpu_cores_per_socket"`
+	CpuPhysicalCores     int32                `protobuf:"varint,17,opt,name=cpu_physical_cores,json=cpuPhysicalCores,proto3" json:"cpu_physical_cores" csv:"cpu_physical_cores" yaml:"cpu_physical_cores"`
+	CpuLogicalCores      int32                `protobuf:"varint,18,opt,name=cpu_logical_cores,json=cpuLogicalCores,proto3" json:"cpu_logical_cores" csv:"cpu_logical_cores" yaml:"cpu_logical_cores"`
+	CpuSockets           int32                `protobuf:"varint,19,opt,name=cpu_sockets,json=cpuSockets,proto3" json:"cpu_sockets" csv:"cpu_sockets" yaml:"cpu_sockets"`
+	CpuThreadsPerCore    int32                `protobuf:"varint,20,opt,name=cpu_threads_per_core,json=cpuThreadsPerCore,proto3" json:"cpu_threads_per_core" csv:"cpu_threads_per_core" yaml:"cpu_threads_per_core"`
+	CpuModel             string               `protobuf:"bytes,21,opt,name=cpu_model,json=cpuModel,proto3" json:"cpu_model" csv:"cpu_model" yaml:"cpu_model"`
+	CpuFlags             string               `protobuf:"bytes,22,opt,name=cpu_flags,json=cpuFlags,proto3" json:"cpu_flags" csv:"cpu_flags" yaml:"cpu_flags"`
+	Os                   string               `protobuf:"bytes,23,opt,name=os,proto3" json:"os" csv:"os" yaml:"os"`
+	OsVersion            string               `protobuf:"bytes,24,opt,name=os_version,json=osVersion,proto3" json:"os_version" csv:"os_version" yaml:"os_version"`
+	OsBuild              string               `protobuf:"bytes,25,opt,name=os_build,json=osBuild,proto3" json:"os_build" csv:"os_build" yaml:"os_build"`
+	OsDescr              string               `protobuf:"bytes,26,opt,name=os_descr,json=osDescr,proto3" json:"os_descr" csv:"os_descr" yaml:"os_descr"`
+	Kernel               string               `protobuf:"bytes,27,opt,name=kernel,proto3" json:"kernel" csv:"kernel" yaml:"kernel"`
+	KernelVersion        string               `protobuf:"bytes,28,opt,name=kernel_version,json=kernelVersion,proto3" json:"kernel_version" csv:"kernel_version" yaml:"kernel_version"`
+	KernelRelease        string               `protobuf:"bytes,29,opt,name=kernel_release,json=kernelRelease,proto3" json:"kernel_release" csv:"kernel_release" yaml:"kernel_release"`
+	Description          string               `protobuf:"bytes,30,opt,name=description,proto3" json:"description" csv:"description" yaml:"description"`
+	Site                 string               `protobuf:"bytes,31,opt,name=site,proto3" json:"site" csv:"site" yaml:"site"`
+	Rack                 string               `protobuf:"bytes,32,opt,name=rack,proto3" json:"rack" csv:"rack" yaml:"rack"`
+	RackPosition         int32                `protobuf:"varint,33,opt,name=rack_position,json=rackPosition,proto3" json:"rack_position" csv:"rack_position" yaml:"rack_position"`
+	RackSize             int32                `protobuf:"varint,34,opt,name=rack_size,json=rackSize,proto3" json:"rack_size" csv:"rack_size" yaml:"rack_size"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte               `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32                `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *System) Reset()         { *m = System{} }

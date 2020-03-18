@@ -21,16 +21,16 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Site struct {
-	Site                 string   `protobuf:"bytes,1,opt,name=site,proto3" json:"site"`
-	Address1             string   `protobuf:"bytes,2,opt,name=address1,proto3" json:"address1"`
-	Address2             string   `protobuf:"bytes,3,opt,name=address2,proto3" json:"address2"`
-	City                 string   `protobuf:"bytes,4,opt,name=city,proto3" json:"city"`
-	ZipPostalCode        string   `protobuf:"bytes,5,opt,name=zip_postal_code,json=zipPostalCode,proto3" json:"zip_postal_code"`
-	CountryCode          string   `protobuf:"bytes,6,opt,name=country_code,json=countryCode,proto3" json:"country_code"`
-	Organization         string   `protobuf:"bytes,7,opt,name=organization,proto3" json:"organization"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Site                 string   `protobuf:"bytes,1,opt,name=site,proto3" json:"site" csv:"site" yaml:"site"`
+	Address1             string   `protobuf:"bytes,2,opt,name=address1,proto3" json:"address1" csv:"address1" yaml:"address1"`
+	Address2             string   `protobuf:"bytes,3,opt,name=address2,proto3" json:"address2" csv:"address2" yaml:"address2"`
+	City                 string   `protobuf:"bytes,4,opt,name=city,proto3" json:"city" csv:"city" yaml:"city"`
+	ZipPostalCode        string   `protobuf:"bytes,5,opt,name=zip_postal_code,json=zipPostalCode,proto3" json:"zip_postal_code" csv:"zip_postal_code" yaml:"zip_postal_code"`
+	CountryCode          string   `protobuf:"bytes,6,opt,name=country_code,json=countryCode,proto3" json:"country_code" csv:"country_code" yaml:"country_code"`
+	Organization         string   `protobuf:"bytes,7,opt,name=organization,proto3" json:"organization" csv:"organization" yaml:"organization"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *Site) Reset()         { *m = Site{} }

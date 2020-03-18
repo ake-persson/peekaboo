@@ -41,8 +41,9 @@ pbgen:
 		protoc -I . --go_out=plugins=grpc:$$GOPATH/src $$f ;\
 	done
 	for f in $$(find pkg -type f -name \*.go); do \
-		sed -i "" -e "s/,omitempty//g" $$f ;\
-	done
+		sed -i "" -e "s/,omitempty//g" -e 's!json:"\(.*\)"!json:"\1" csv:"\1" yaml:"\1"!g' $$f ;\
+        done
+
 
 build:
 	cd client && go build -ldflags "-X main.version=$(VERSION)"

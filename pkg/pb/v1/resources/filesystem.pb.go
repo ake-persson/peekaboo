@@ -21,24 +21,24 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Filesystem struct {
-	Filesystem string `protobuf:"bytes,1,opt,name=filesystem,proto3" json:"filesystem"`
-	Type       string `protobuf:"bytes,2,opt,name=type,proto3" json:"type"`
+	Filesystem string `protobuf:"bytes,1,opt,name=filesystem,proto3" json:"filesystem" csv:"filesystem" yaml:"filesystem"`
+	Type       string `protobuf:"bytes,2,opt,name=type,proto3" json:"type" csv:"type" yaml:"type"`
 	// KB as in 1024 bytes
-	SizeKb               uint64   `protobuf:"varint,3,opt,name=size_kb,json=sizeKb,proto3" json:"size_kb"`
-	UsedKb               uint64   `protobuf:"varint,4,opt,name=used_kb,json=usedKb,proto3" json:"used_kb"`
-	FreeKb               uint64   `protobuf:"varint,5,opt,name=free_kb,json=freeKb,proto3" json:"free_kb"`
-	UsedPct              float32  `protobuf:"fixed32,6,opt,name=used_pct,json=usedPct,proto3" json:"used_pct"`
-	Inodes               uint64   `protobuf:"varint,7,opt,name=inodes,proto3" json:"inodes"`
-	InodesUsed           uint64   `protobuf:"varint,8,opt,name=inodes_used,json=inodesUsed,proto3" json:"inodes_used"`
-	InodesFree           uint64   `protobuf:"varint,9,opt,name=inodes_free,json=inodesFree,proto3" json:"inodes_free"`
-	InodesUsedPct        float32  `protobuf:"fixed32,10,opt,name=inodes_used_pct,json=inodesUsedPct,proto3" json:"inodes_used_pct"`
-	MountedOn            string   `protobuf:"bytes,11,opt,name=mounted_on,json=mountedOn,proto3" json:"mounted_on"`
-	MountOptions         []string `protobuf:"bytes,12,rep,name=mount_options,json=mountOptions,proto3" json:"mount_options"`
-	IsLocal              bool     `protobuf:"varint,13,opt,name=is_local,json=isLocal,proto3" json:"is_local"`
-	IsAutomounted        bool     `protobuf:"varint,14,opt,name=is_automounted,json=isAutomounted,proto3" json:"is_automounted"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	SizeKb               uint64   `protobuf:"varint,3,opt,name=size_kb,json=sizeKb,proto3" json:"size_kb" csv:"size_kb" yaml:"size_kb"`
+	UsedKb               uint64   `protobuf:"varint,4,opt,name=used_kb,json=usedKb,proto3" json:"used_kb" csv:"used_kb" yaml:"used_kb"`
+	FreeKb               uint64   `protobuf:"varint,5,opt,name=free_kb,json=freeKb,proto3" json:"free_kb" csv:"free_kb" yaml:"free_kb"`
+	UsedPct              float32  `protobuf:"fixed32,6,opt,name=used_pct,json=usedPct,proto3" json:"used_pct" csv:"used_pct" yaml:"used_pct"`
+	Inodes               uint64   `protobuf:"varint,7,opt,name=inodes,proto3" json:"inodes" csv:"inodes" yaml:"inodes"`
+	InodesUsed           uint64   `protobuf:"varint,8,opt,name=inodes_used,json=inodesUsed,proto3" json:"inodes_used" csv:"inodes_used" yaml:"inodes_used"`
+	InodesFree           uint64   `protobuf:"varint,9,opt,name=inodes_free,json=inodesFree,proto3" json:"inodes_free" csv:"inodes_free" yaml:"inodes_free"`
+	InodesUsedPct        float32  `protobuf:"fixed32,10,opt,name=inodes_used_pct,json=inodesUsedPct,proto3" json:"inodes_used_pct" csv:"inodes_used_pct" yaml:"inodes_used_pct"`
+	MountedOn            string   `protobuf:"bytes,11,opt,name=mounted_on,json=mountedOn,proto3" json:"mounted_on" csv:"mounted_on" yaml:"mounted_on"`
+	MountOptions         []string `protobuf:"bytes,12,rep,name=mount_options,json=mountOptions,proto3" json:"mount_options" csv:"mount_options" yaml:"mount_options"`
+	IsLocal              bool     `protobuf:"varint,13,opt,name=is_local,json=isLocal,proto3" json:"is_local" csv:"is_local" yaml:"is_local"`
+	IsAutomounted        bool     `protobuf:"varint,14,opt,name=is_automounted,json=isAutomounted,proto3" json:"is_automounted" csv:"is_automounted" yaml:"is_automounted"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *Filesystem) Reset()         { *m = Filesystem{} }

@@ -21,14 +21,14 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Group struct {
-	Groupname string `protobuf:"bytes,1,opt,name=groupname,proto3" json:"groupname"`
-	Gid       uint64 `protobuf:"varint,2,opt,name=gid,proto3" json:"gid"`
+	Groupname string `protobuf:"bytes,1,opt,name=groupname,proto3" json:"groupname" csv:"groupname" yaml:"groupname"`
+	Gid       uint64 `protobuf:"varint,2,opt,name=gid,proto3" json:"gid" csv:"gid" yaml:"gid"`
 	// Signed GID for Mac OS X.
-	GidSigned            int64    `protobuf:"varint,3,opt,name=gid_signed,json=gidSigned,proto3" json:"gid_signed"`
-	Members              []string `protobuf:"bytes,4,rep,name=members,proto3" json:"members"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	GidSigned            int64    `protobuf:"varint,3,opt,name=gid_signed,json=gidSigned,proto3" json:"gid_signed" csv:"gid_signed" yaml:"gid_signed"`
+	Members              []string `protobuf:"bytes,4,rep,name=members,proto3" json:"members" csv:"members" yaml:"members"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *Group) Reset()         { *m = Group{} }

@@ -1,9 +1,10 @@
 // +build linux
 
-package user
+package group
 
 import (
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 
@@ -17,7 +18,11 @@ func ListGroups() (*services.ListGroupsResponse, error) {
 		return nil, err
 	}
 
-	resp := &services.ListGroupsResponse{Groups: []*resources.Group{}}
+	hostname, _ := os.Hostname()
+	resp := &services.ListGroupsResponse{
+		Hostname: hostname,
+		Groups:   []*resources.Group{},
+	}
 	for _, l := range strings.Split(string(b), "\n") {
 		a := strings.Split(l, ":")
 		if len(a) < 4 {

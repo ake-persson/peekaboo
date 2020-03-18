@@ -64,13 +64,13 @@ func (Operator) EnumDescriptor() ([]byte, []int) {
 }
 
 type Match struct {
-	Field                string   `protobuf:"bytes,1,opt,name=field,proto3" json:"field"`
-	Value                string   `protobuf:"bytes,2,opt,name=value,proto3" json:"value"`
-	Values               []string `protobuf:"bytes,3,rep,name=values,proto3" json:"values"`
-	Operator             Operator `protobuf:"varint,4,opt,name=operator,proto3,enum=peekaboo.v1.resources.Operator" json:"operator"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Field                string   `protobuf:"bytes,1,opt,name=field,proto3" json:"field" csv:"field" yaml:"field"`
+	Value                string   `protobuf:"bytes,2,opt,name=value,proto3" json:"value" csv:"value" yaml:"value"`
+	Values               []string `protobuf:"bytes,3,rep,name=values,proto3" json:"values" csv:"values" yaml:"values"`
+	Operator             Operator `protobuf:"varint,4,opt,name=operator,proto3,enum=peekaboo.v1.resources.Operator" json:"operator" csv:"operator" yaml:"operator"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *Match) Reset()         { *m = Match{} }
@@ -127,11 +127,11 @@ func (m *Match) GetOperator() Operator {
 }
 
 type Sort struct {
-	Field                string   `protobuf:"bytes,1,opt,name=field,proto3" json:"field"`
-	Desc                 bool     `protobuf:"varint,2,opt,name=desc,proto3" json:"desc"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Field                string   `protobuf:"bytes,1,opt,name=field,proto3" json:"field" csv:"field" yaml:"field"`
+	Desc                 bool     `protobuf:"varint,2,opt,name=desc,proto3" json:"desc" csv:"desc" yaml:"desc"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *Sort) Reset()         { *m = Sort{} }
@@ -174,13 +174,13 @@ func (m *Sort) GetDesc() bool {
 }
 
 type Filter struct {
-	Fields               []string `protobuf:"bytes,1,rep,name=fields,proto3" json:"fields"`
-	Matches              []*Match `protobuf:"bytes,2,rep,name=matches,proto3" json:"matches"`
-	Sorting              []*Sort  `protobuf:"bytes,3,rep,name=sorting,proto3" json:"sorting"`
-	Limit                int32    `protobuf:"varint,4,opt,name=limit,proto3" json:"limit"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Fields               []string `protobuf:"bytes,1,rep,name=fields,proto3" json:"fields" csv:"fields" yaml:"fields"`
+	Matches              []*Match `protobuf:"bytes,2,rep,name=matches,proto3" json:"matches" csv:"matches" yaml:"matches"`
+	Sorting              []*Sort  `protobuf:"bytes,3,rep,name=sorting,proto3" json:"sorting" csv:"sorting" yaml:"sorting"`
+	Limit                int32    `protobuf:"varint,4,opt,name=limit,proto3" json:"limit" csv:"limit" yaml:"limit"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *Filter) Reset()         { *m = Filter{} }

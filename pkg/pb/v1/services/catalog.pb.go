@@ -27,10 +27,10 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type ListSystemsRequest struct {
-	Filter               *resources.Filter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+	Filter               *resources.Filter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter" csv:"filter" yaml:"filter"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte            `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32             `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *ListSystemsRequest) Reset()         { *m = ListSystemsRequest{} }
@@ -66,10 +66,10 @@ func (m *ListSystemsRequest) GetFilter() *resources.Filter {
 }
 
 type SystemKeepAliveRequest struct {
-	Hostname             string   `protobuf:"bytes,1,opt,name=hostname,proto3" json:"hostname"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Hostname             string   `protobuf:"bytes,1,opt,name=hostname,proto3" json:"hostname" csv:"hostname" yaml:"hostname"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *SystemKeepAliveRequest) Reset()         { *m = SystemKeepAliveRequest{} }

@@ -1,9 +1,10 @@
 // +build darwin
 
-package user
+package group
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -18,7 +19,11 @@ func ListGroups() (*services.ListGroupsResponse, error) {
 		return nil, err
 	}
 
-	resp := &services.ListGroupsResponse{Groups: []*resources.Group{}}
+	hostname, _ := os.Hostname()
+	resp := &services.ListGroupsResponse{
+		Hostname: hostname,
+		Groups:   []*resources.Group{},
+	}
 	g := &resources.Group{}
 	i := 0
 	for _, l := range strings.Split(string(out), "\n") {

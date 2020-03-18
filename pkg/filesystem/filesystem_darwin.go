@@ -1,8 +1,9 @@
 // +build darwin
 
-package storage
+package filesystem
 
 import (
+	"os"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -27,7 +28,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 			continue
 		}
 
-		options[a[1]] = strings.Split(a[2], ", ")
+		options[strings.TrimPrefix(a[1], "map ")] = strings.Split(a[2], ", ")
 	}
 
 	out, err = exec.Command("df", "-k", "-i").Output()
@@ -35,7 +36,11 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 		return nil, err
 	}
 
-	resp := &services.ListFilesystemsResponse{Filesystems: []*resources.Filesystem{}}
+	hostname, _ := os.Hostname()
+	resp := &services.ListFilesystemsResponse{
+		Hostname:    hostname,
+		Filesystems: []*resources.Filesystem{},
+	}
 	for i, l := range strings.Split(string(out), "\n") {
 		if i < 1 {
 			continue
@@ -92,7 +97,7 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 				switch v[1] {
 				case "local":
 					f.IsLocal = true
-				case "autofs":
+				case "automounted":
 					f.IsAutomounted = true
 				}
 				f.MountOptions = v[2:]

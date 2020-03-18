@@ -21,19 +21,19 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type User struct {
-	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username"`
-	Comment  string `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment"`
-	Uid      uint64 `protobuf:"varint,3,opt,name=uid,proto3" json:"uid"`
-	Gid      uint64 `protobuf:"varint,4,opt,name=gid,proto3" json:"gid"`
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username" csv:"username" yaml:"username"`
+	Comment  string `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment" csv:"comment" yaml:"comment"`
+	Uid      uint64 `protobuf:"varint,3,opt,name=uid,proto3" json:"uid" csv:"uid" yaml:"uid"`
+	Gid      uint64 `protobuf:"varint,4,opt,name=gid,proto3" json:"gid" csv:"gid" yaml:"gid"`
 	// Signed UID for Mac OS X.
-	UidSigned int64 `protobuf:"varint,5,opt,name=uid_signed,json=uidSigned,proto3" json:"uid_signed"`
+	UidSigned int64 `protobuf:"varint,5,opt,name=uid_signed,json=uidSigned,proto3" json:"uid_signed" csv:"uid_signed" yaml:"uid_signed"`
 	// Signed GID for Mac OS X.
-	GidSigned            int64    `protobuf:"varint,6,opt,name=gid_signed,json=gidSigned,proto3" json:"gid_signed"`
-	Directory            string   `protobuf:"bytes,7,opt,name=directory,proto3" json:"directory"`
-	Shell                string   `protobuf:"bytes,8,opt,name=shell,proto3" json:"shell"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	GidSigned            int64    `protobuf:"varint,6,opt,name=gid_signed,json=gidSigned,proto3" json:"gid_signed" csv:"gid_signed" yaml:"gid_signed"`
+	Directory            string   `protobuf:"bytes,7,opt,name=directory,proto3" json:"directory" csv:"directory" yaml:"directory"`
+	Shell                string   `protobuf:"bytes,8,opt,name=shell,proto3" json:"shell" csv:"shell" yaml:"shell"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-" csv:"-" yaml:"-"`
+	XXX_unrecognized     []byte   `json:"-" csv:"-" yaml:"-"`
+	XXX_sizecache        int32    `json:"-" csv:"-" yaml:"-"`
 }
 
 func (m *User) Reset()         { *m = User{} }
