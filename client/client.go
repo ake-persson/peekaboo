@@ -2,23 +2,23 @@ package main
 
 import (
 	"context"
-	"encoding/csv"
-	"encoding/json"
+	//	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strings"
-	"text/tabwriter"
 	"time"
 
 	"github.com/mitchellh/go-homedir"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
+	"github.com/peekaboo-labs/peekaboo/pkg/filesystem"
+	"github.com/peekaboo-labs/peekaboo/pkg/group"
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
-	"github.com/peekaboo-labs/peekaboo/pkg/storage"
 	"github.com/peekaboo-labs/peekaboo/pkg/system"
+	"github.com/peekaboo-labs/peekaboo/pkg/text"
 	"github.com/peekaboo-labs/peekaboo/pkg/user"
 )
 
@@ -97,22 +97,43 @@ func main() {
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	}
 
-	for i, addr := range addresses {
+	tables := text.Tables{}
+	for _, addr := range addresses {
 		if !strings.Contains(addr, ":") {
 			addr += ":17711"
 		}
 
-		if err := dialAgent(i, resource, conf.Format, strings.Split(conf.Fields, ","), addr, opts); err != nil {
-			log.Print(err)
+		switch conf.Format {
+		/*
+			case "json":
+				if err := dialAgent(i, resource, conf.Format, strings.Split(conf.Fields, ","), addr, opts); err != nil {
+					log.Print(err)
+				}
+		*/
+		case "csv", "table":
+			t, err := dialAgent(resource, addr, opts)
+			if err != nil {
+				log.Print(err)
+			}
+			tables = append(tables, t)
+		default:
+			log.Fatalf("unknown output format: %s", conf.Format)
 		}
+	}
+
+	switch conf.Format {
+	case "csv":
+		tables.PrintCSV(os.Stdout)
+	case "table":
+		tables.PrintTable(os.Stdout)
 	}
 }
 
-func dialAgent(index int, resource string, format string, fields []string, addr string, opts []grpc.DialOption) error {
+func dialAgent(resource string, addr string, opts []grpc.DialOption) (*text.Table, error) {
 	// Connect to gRPC server.
 	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close()
 
@@ -123,157 +144,32 @@ func dialAgent(index int, resource string, format string, fields []string, addr 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	switch format {
-	case "csv":
-	case "table":
-	case "json":
-	}
-
 	switch resource {
 	case "system":
-		v, err := client.GetSystem(ctx, &services.GetSystemRequest{})
+		resp, err := client.GetSystem(ctx, &services.GetSystemRequest{})
 		if err != nil {
-			return err
+			return nil, err
 		}
-
-		switch format {
-		case "json":
-			b, err := json.MarshalIndent(v, "", "  ")
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(b))
-		case "csv":
-			w := csv.NewWriter(os.Stdout)
-			h, t := system.SystemToStringTable(v)
-			if index == 0 {
-				if err := w.Write(h); err != nil {
-					return err
-				}
-			}
-			if err := w.WriteAll(t); err != nil {
-				return err
-			}
-		case "table":
-			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-			h, t := system.SystemToStringTable(v)
-			if index == 0 {
-				fmt.Fprintln(w, strings.Join(h, "\t"))
-			}
-			for _, r := range t {
-				fmt.Fprintln(w, strings.Join(r, "\t"))
-			}
-			w.Flush()
-		case "vtable":
-			system.PrintSystem(v)
-			fmt.Println()
-		}
+		return system.ToTable(resp), nil
 	case "users":
-		v, err := client.ListUsers(ctx, &services.ListUsersRequest{})
+		resp, err := client.ListUsers(ctx, &services.ListUsersRequest{})
 		if err != nil {
-			return err
+			return nil, err
 		}
-
-		switch format {
-		case "json":
-			b, err := json.MarshalIndent(v, "", "  ")
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(b))
-		case "csv":
-			w := csv.NewWriter(os.Stdout)
-			h, t := user.UsersToStringTable(v.Hostname, v.Users)
-			if index == 0 {
-				if err := w.Write(h); err != nil {
-					return err
-				}
-			}
-			if err := w.WriteAll(t); err != nil {
-				return err
-			}
-		case "table":
-			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-			h, t := user.UsersToStringTable(v.Hostname, v.Users)
-			if index == 0 {
-				fmt.Fprintln(w, strings.Join(h, "\t"))
-			}
-			for _, r := range t {
-				fmt.Fprintln(w, strings.Join(r, "\t"))
-			}
-			w.Flush()
-		}
+		return user.ToTable(resp.Hostname, resp.Users), nil
 	case "groups":
-		v, err := client.ListGroups(ctx, &services.ListGroupsRequest{})
+		resp, err := client.ListGroups(ctx, &services.ListGroupsRequest{})
 		if err != nil {
-			return err
+			return nil, err
 		}
-
-		switch format {
-		case "json":
-			b, err := json.MarshalIndent(v, "", "  ")
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(b))
-		case "csv":
-			w := csv.NewWriter(os.Stdout)
-			h, t := user.GroupsToStringTable(v.Hostname, v.Groups)
-			if index == 0 {
-				if err := w.Write(h); err != nil {
-					return err
-				}
-			}
-			if err := w.WriteAll(t); err != nil {
-				return err
-			}
-		case "table":
-			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-			h, t := user.GroupsToStringTable(v.Hostname, v.Groups)
-			if index == 0 {
-				fmt.Fprintln(w, strings.Join(h, "\t"))
-			}
-			for _, r := range t {
-				fmt.Fprintln(w, strings.Join(r, "\t"))
-			}
-			w.Flush()
-		}
+		return group.ToTable(resp.Hostname, resp.Groups), nil
 	case "filesystems":
-		v, err := client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
+		resp, err := client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
 		if err != nil {
-			return err
+			return nil, err
 		}
-
-		switch format {
-		case "json":
-			b, err := json.MarshalIndent(v, "", "  ")
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(b))
-		case "csv":
-			w := csv.NewWriter(os.Stdout)
-			h, t := storage.FilesystemsToStringTable(v.Hostname, v.Filesystems)
-			if index == 0 {
-				if err := w.Write(h); err != nil {
-					return err
-				}
-			}
-			if err := w.WriteAll(t); err != nil {
-				return err
-			}
-		case "table":
-			w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-			h, t := storage.FilesystemsToStringTable(v.Hostname, v.Filesystems)
-			if index == 0 {
-				fmt.Fprintln(w, strings.Join(h, "\t"))
-			}
-			for _, r := range t {
-				fmt.Fprintln(w, strings.Join(r, "\t"))
-			}
-			w.Flush()
-		}
+		return filesystem.ToTable(resp.Hostname, resp.Filesystems), nil
 	}
 
-	return nil
+	return nil, nil
 }

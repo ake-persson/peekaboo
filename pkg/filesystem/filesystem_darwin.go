@@ -1,6 +1,6 @@
-// +build linux
+// +build darwin
 
-package storage
+package filesystem
 
 import (
 	"os"
@@ -28,10 +28,10 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 			continue
 		}
 
-		options[a[1]] = strings.Split(a[2], ",")
+		options[strings.TrimPrefix(a[1], "map ")] = strings.Split(a[2], ", ")
 	}
 
-	out, err = exec.Command("df", "-k", "--output=source,fstype,size,used,avail,itotal,iused,iavail,target").Output()
+	out, err = exec.Command("df", "-k", "-i").Output()
 	if err != nil {
 		return nil, err
 	}
@@ -51,43 +51,57 @@ func ListFilesystems() (*services.ListFilesystemsResponse, error) {
 			continue
 		}
 
+		if a[0] == "map" {
+			a = a[1:]
+		}
+
 		f := &resources.Filesystem{
 			Filesystem: a[0],
-			Type:       a[1],
 			MountedOn:  a[8],
 		}
 
 		var err error
-		if f.SizeKb, err = strconv.ParseUint(a[2], 10, 64); err != nil {
+		if f.SizeKb, err = strconv.ParseUint(a[1], 10, 64); err != nil {
 			return nil, err
 		}
 
-		if f.UsedKb, err = strconv.ParseUint(a[3], 10, 64); err != nil {
+		if f.UsedKb, err = strconv.ParseUint(a[2], 10, 64); err != nil {
 			return nil, err
 		}
 
-		if f.FreeKb, err = strconv.ParseUint(a[4], 10, 64); err != nil {
+		if f.FreeKb, err = strconv.ParseUint(a[3], 10, 64); err != nil {
 			return nil, err
 		}
 
-		f.UsedPct = float32(f.UsedKb) / float32(f.SizeKb) * 100
+		if f.SizeKb != 0 {
+			f.UsedPct = float32(f.UsedKb) / float32(f.SizeKb) * 100
+		}
 
-		if f.Inodes, err = strconv.ParseUint(a[5], 10, 64); err != nil {
+		if f.InodesUsed, err = strconv.ParseUint(a[5], 10, 64); err != nil {
 			return nil, err
 		}
 
-		if f.InodesUsed, err = strconv.ParseUint(a[6], 10, 64); err != nil {
+		if f.InodesFree, err = strconv.ParseUint(a[6], 10, 64); err != nil {
 			return nil, err
 		}
 
-		if f.InodesFree, err = strconv.ParseUint(a[7], 10, 64); err != nil {
-			return nil, err
-		}
+		f.Inodes = f.InodesUsed + f.InodesFree
 
-		f.InodesUsedPct = float32(f.InodesUsed) / float32(f.Inodes) * 100
+		if f.Inodes != 0 {
+			f.InodesUsedPct = float32(f.InodesUsed) / float32(f.Inodes) * 100
+		}
 
 		if v, ok := options[f.Filesystem]; ok {
-			f.MountOptions = v
+			if len(v) > 2 {
+				f.Type = v[0]
+				switch v[1] {
+				case "local":
+					f.IsLocal = true
+				case "automounted":
+					f.IsAutomounted = true
+				}
+				f.MountOptions = v[2:]
+			}
 		}
 
 		resp.Filesystems = append(resp.Filesystems, f)

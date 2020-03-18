@@ -7,7 +7,7 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/text"
 )
 
-func SystemToTable(s *resources.System) text.Table {
+func ToTable(s *resources.System) *text.Table {
 	t := text.Table{
 		Headers: []string{"hostname", "address", "manufacturer", "product", "product_version", "serial_number",
 			"bios_vendor", "bios_date", "bios_version", "boot_rom_version", "smc_version", "memory_gb",
@@ -50,5 +50,5 @@ func SystemToTable(s *resources.System) text.Table {
 	t.Rows[0][29] = fmt.Sprint(s.RackPosition)
 	t.Rows[0][30] = fmt.Sprint(s.RackSize)
 
-	return t
+	return &t
 }

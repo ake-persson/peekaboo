@@ -1,16 +1,20 @@
-package storage
+package filesystem
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
+	"github.com/peekaboo-labs/peekaboo/pkg/text"
 )
 
-func FilesystemsToStringTable(hostname string, fs []*resources.Filesystem) ([]string, [][]string) {
-	h := []string{"hostname", "filesystem", "type", "size_kb", "used_kb", "free_kb", "used_pct", "inodes",
-		"inodes_free", "inodes_used", "inodes_used_pct", "mounted_on", "mount_options", "is_local", "is_automounted"}
-	t := make([][]string, 0)
+func ToTable(hostname string, fs []*resources.Filesystem) *text.Table {
+	t := text.Table{
+		Headers: []string{"hostname", "filesystem", "type", "size_kb", "used_kb", "free_kb", "used_pct", "inodes",
+			"inodes_free", "inodes_used", "inodes_used_pct", "mounted_on", "mount_options", "is_local", "is_automounted"},
+		Rows: make([][]string, 0),
+	}
+
 	for _, f := range fs {
 		r := make([]string, 15)
 		r[0] = hostname
@@ -28,7 +32,8 @@ func FilesystemsToStringTable(hostname string, fs []*resources.Filesystem) ([]st
 		r[12] = strings.Join(f.MountOptions, ",")
 		r[13] = fmt.Sprintf("%t", f.IsLocal)
 		r[14] = fmt.Sprintf("%t", f.IsAutomounted)
-		t = append(t, r)
+		t.Rows = append(t.Rows, r)
 	}
-	return h, t
+
+	return &t
 }

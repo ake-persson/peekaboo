@@ -4,11 +4,16 @@ import (
 	"fmt"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
+	"github.com/peekaboo-labs/peekaboo/pkg/text"
 )
 
-func UsersToStringTable(hostname string, users []*resources.User) ([]string, [][]string) {
-	h := []string{"hostname", "username", "comment", "uid", "gid", "uid_signed", "gid_signed", "directory", "shell"}
-	t := make([][]string, 0)
+func ToTable(hostname string, users []*resources.User) *text.Table {
+	t := text.Table{
+		Headers: []string{"hostname", "username", "comment", "uid", "gid",
+			"uid_signed", "gid_signed", "directory", "shell"},
+		Rows: make([][]string, 0),
+	}
+
 	for _, u := range users {
 		r := make([]string, 9)
 		r[0] = hostname
@@ -20,7 +25,8 @@ func UsersToStringTable(hostname string, users []*resources.User) ([]string, [][
 		r[6] = fmt.Sprint(u.GidSigned)
 		r[7] = fmt.Sprint(u.Directory)
 		r[8] = fmt.Sprint(u.Shell)
-		t = append(t, r)
+		t.Rows = append(t.Rows, r)
 	}
-	return h, t
+
+	return &t
 }

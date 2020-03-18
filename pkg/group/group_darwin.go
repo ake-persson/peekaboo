@@ -1,6 +1,6 @@
 // +build darwin
 
-package user
+package group
 
 import (
 	"fmt"

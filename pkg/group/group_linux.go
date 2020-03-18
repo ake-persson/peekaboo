@@ -1,6 +1,6 @@
 // +build linux
 
-package user
+package group
 
 import (
 	"io/ioutil"
