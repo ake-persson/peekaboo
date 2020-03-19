@@ -6,9 +6,9 @@
 
 # Peekaboo
 
-Micro-service for exposing system and hardware info
+Micro-service for exposing system and hardware information.
 
-This is a re-factoring of [Peekaboo](https://github.com/imc-trading/peekaboo) to support gRPC and MTLS and also a cleaner implementation.
+This is a re-factoring of the original [Peekaboo](https://github.com/imc-trading/peekaboo) to support gRPC and MTLS.
 
 ## Usage
 
