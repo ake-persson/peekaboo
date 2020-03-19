@@ -8,6 +8,8 @@
 
 Micro-service for exposing system and hardware info
 
+This is a re-factoring of [Peekaboo](https://github.com/imc-trading/peekaboo) to support gRPC and MTLS and also a cleaner implementation.
+
 ## Usage
 
 ```
