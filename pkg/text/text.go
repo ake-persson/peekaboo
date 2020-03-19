@@ -17,7 +17,16 @@ type Table struct {
 
 type Tables []*Table
 
-func (ts Tables) PrintTable(output io.Writer) {
+func inList(a string, l []string) bool {
+	for _, b := range l {
+		if a == b {
+			return true
+		}
+	}
+	return false
+}
+
+func (ts Tables) PrintTable(output io.Writer, fields []string) {
 	if len(ts) < 1 {
 		return
 	}
@@ -33,7 +42,7 @@ func (ts Tables) PrintTable(output io.Writer) {
 	w.Flush()
 }
 
-func (ts Tables) PrintVertTable(output io.Writer) {
+func (ts Tables) PrintVertTable(output io.Writer, fields []string) {
 	if len(ts) < 1 {
 		return
 	}
@@ -42,6 +51,9 @@ func (ts Tables) PrintVertTable(output io.Writer) {
 	for _, t := range ts {
 		for _, r := range t.Rows {
 			for i, c := range r {
+				if len(fields) > 0 && !inList(t.Headers[i], fields) {
+					continue
+				}
 				if i == 0 {
 					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", color.LightCyan, t.Headers[i], color.LightYellow, c, color.Reset)
 				} else {
@@ -55,7 +67,7 @@ func (ts Tables) PrintVertTable(output io.Writer) {
 	w.Flush()
 }
 
-func (ts Tables) PrintCSV(output io.Writer) {
+func (ts Tables) PrintCSV(output io.Writer, fields []string) {
 	if len(ts) < 1 {
 		return
 	}

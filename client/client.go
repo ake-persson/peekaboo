@@ -49,6 +49,16 @@ func inList(a string, l []string) bool {
 	return false
 }
 
+func splitOmitEmpty(s string, del string) []string {
+	out := []string{}
+	for _, v := range strings.Split(s, del) {
+		if v != "" {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource> <address...>\n", os.Args[0])
 	flag.PrintDefaults()
@@ -146,11 +156,11 @@ func main() {
 		b, _ := json.MarshalIndent(responses, "", "  ")
 		fmt.Print(string(b))
 	case "csv":
-		tables.PrintCSV(os.Stdout)
+		tables.PrintCSV(os.Stdout, splitOmitEmpty(conf.Fields, ","))
 	case "table":
-		tables.PrintTable(os.Stdout)
+		tables.PrintTable(os.Stdout, splitOmitEmpty(conf.Fields, ","))
 	case "vtable":
-		tables.PrintVertTable(os.Stdout)
+		tables.PrintVertTable(os.Stdout, splitOmitEmpty(conf.Fields, ","))
 	}
 }
 
