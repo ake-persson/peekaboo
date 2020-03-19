@@ -50,6 +50,12 @@ brew install go
 yum install golang
 ```
 
+### Ubuntu/Debian
+
+```
+apt-get install goland
+```
+
 ### Setup Go environment
 
 ```bash
