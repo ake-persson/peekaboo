@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/mickep76/color"
@@ -32,10 +31,31 @@ func (ts Tables) PrintTable(output io.Writer, fields []string) {
 	}
 
 	w := tabwriter.NewWriter(output, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, fmt.Sprintf("%s%s\t%s%s%s", color.LightCyan, ts[0].Headers[0], color.Cyan, strings.Join(ts[0].Headers[1:], "\t"), color.Reset))
+	for i, c := range ts[0].Headers {
+		if len(fields) > 0 && !inList(ts[0].Headers[i], fields) {
+			continue
+		}
+		if i == 0 {
+			fmt.Fprintf(w, "%s%s%s\t", color.LightCyan, c, color.Reset)
+		} else {
+			fmt.Fprintf(w, "%s%s%s\t", color.Cyan, c, color.Reset)
+		}
+	}
+	fmt.Fprintln(w)
+
 	for _, t := range ts {
 		for _, r := range t.Rows {
-			fmt.Fprintln(w, fmt.Sprintf("%s%s\t%s%s%s", color.LightYellow, r[0], color.Yellow, strings.Join(r[1:], "\t"), color.Reset))
+			for i, c := range r {
+				if len(fields) > 0 && !inList(t.Headers[i], fields) {
+					continue
+				}
+				if i == 0 {
+					fmt.Fprintf(w, "%s%s%s\t", color.LightYellow, c, color.Reset)
+				} else {
+					fmt.Fprintf(w, "%s%s%s\t", color.Yellow, c, color.Reset)
+				}
+			}
+			fmt.Fprintln(w)
 		}
 	}
 
