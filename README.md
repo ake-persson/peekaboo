@@ -6,7 +6,7 @@
 
 # Peekaboo
 
-Expose system info using gRPC
+Micro-service for exposing system info
 
 ## Usage
 

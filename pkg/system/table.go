@@ -29,7 +29,7 @@ func ToTable(s *resources.System) *text.Table {
 	t.Rows[0][8] = s.BiosVersion
 	t.Rows[0][9] = s.BootRomVersion
 	t.Rows[0][10] = s.SmcVersion
-	t.Rows[0][11] = fmt.Sprint(s.MemoryGb)
+	t.Rows[0][11] = fmt.Sprintf("%dG", s.MemoryGb)
 	t.Rows[0][12] = fmt.Sprint(s.CpuCoresPerSocket)
 	t.Rows[0][13] = fmt.Sprint(s.CpuPhysicalCores)
 	t.Rows[0][14] = fmt.Sprint(s.CpuLogicalCores)
@@ -47,8 +47,8 @@ func ToTable(s *resources.System) *text.Table {
 	t.Rows[0][26] = s.Description
 	t.Rows[0][27] = s.Site
 	t.Rows[0][28] = s.Rack
-	t.Rows[0][29] = fmt.Sprint(s.RackPosition)
-	t.Rows[0][30] = fmt.Sprint(s.RackSize)
+	t.Rows[0][29] = fmt.Sprintf("%dU", s.RackPosition)
+	t.Rows[0][30] = fmt.Sprintf("%dU", s.RackSize)
 
 	return &t
 }
