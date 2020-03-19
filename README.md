@@ -11,7 +11,7 @@ Expose system info using gRPC
 ## Usage
 
 ```
-Usage: ./client/client [options] <resource> <address...>
+Usage: client [options] <resource> <address...>
   -ca-file string
         CA certificate file, required for Mutual TLS (default "~/certs/root_ca.crt")
   -cert-file string
@@ -71,7 +71,10 @@ git clone https://github.com/peekaboo-labs/peekaboo.git
 
 ## Build and run
 
+Build and start agent.
+
 ```
+cd $GOPATH/src/github.com/peekaboo-labs/peekaboo
 make deps build
 ./agent/agent -no-tls
 ```
