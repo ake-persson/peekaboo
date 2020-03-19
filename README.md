@@ -6,7 +6,7 @@
 
 # Peekaboo
 
-Micro-service for exposing system info
+Micro-service for exposing system and hardware info
 
 ## Usage
 
