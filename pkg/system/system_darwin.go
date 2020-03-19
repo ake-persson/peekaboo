@@ -26,7 +26,7 @@ func GetSystem() (*resources.System, error) {
 	}
 
 	for _, l := range strings.Split(string(o), "\n") {
-		a := strings.Split(l, ":")
+		a := strings.SplitN(l, ":", 2)
 		if len(a) < 2 {
 			continue
 		}
