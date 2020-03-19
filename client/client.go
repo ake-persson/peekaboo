@@ -22,6 +22,11 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/user"
 )
 
+// TODO
+// - Set field order using flag
+// - No color option
+// - Define color option
+
 type config struct {
 	NoTLS    bool
 	MTLS     bool // TBD
@@ -39,15 +44,6 @@ type envelope struct {
 }
 
 var version = "undefined"
-
-func inList(a string, l []string) bool {
-	for _, b := range l {
-		if a == b {
-			return true
-		}
-	}
-	return false
-}
 
 func splitOmitEmpty(s string, del string) []string {
 	out := []string{}
@@ -104,12 +100,12 @@ func main() {
 	conf.CAFile, _ = homedir.Expand(conf.CAFile)
 
 	// Check resource.
-	if !inList(resource, []string{"system", "users", "groups", "filesystems"}) {
+	if !text.InList(resource, []string{"system", "users", "groups", "filesystems"}) {
 		log.Fatalf("unknown resource: %s", resource)
 	}
 
 	// Check format.
-	if !inList(conf.Format, []string{"json", "csv", "table", "vtable"}) {
+	if !text.InList(conf.Format, []string{"json", "csv", "table", "vtable"}) {
 		log.Fatalf("unknown format: %s", conf.Format)
 	}
 

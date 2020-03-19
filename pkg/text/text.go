@@ -4,19 +4,23 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/mickep76/color"
 )
 
-type Table struct {
-	Headers []string
-	Rows    [][]string
+func Split(s string, del string) []string {
+	out := []string{}
+	for _, v := range strings.Split(s, del) {
+		if v != "" {
+			out = append(out, v)
+		}
+	}
+	return out
 }
 
-type Tables []*Table
-
-func inList(a string, l []string) bool {
+func InList(a string, l []string) bool {
 	for _, b := range l {
 		if a == b {
 			return true
@@ -25,6 +29,13 @@ func inList(a string, l []string) bool {
 	return false
 }
 
+type Table struct {
+	Headers []string
+	Rows    [][]string
+}
+
+type Tables []*Table
+
 func (ts Tables) PrintTable(output io.Writer, fields []string) {
 	if len(ts) < 1 {
 		return
@@ -32,7 +43,7 @@ func (ts Tables) PrintTable(output io.Writer, fields []string) {
 
 	w := tabwriter.NewWriter(output, 0, 0, 2, ' ', 0)
 	for i, c := range ts[0].Headers {
-		if len(fields) > 0 && !inList(ts[0].Headers[i], fields) {
+		if len(fields) > 0 && !InList(ts[0].Headers[i], fields) {
 			continue
 		}
 		if i == 0 {
@@ -46,7 +57,7 @@ func (ts Tables) PrintTable(output io.Writer, fields []string) {
 	for _, t := range ts {
 		for _, r := range t.Rows {
 			for i, c := range r {
-				if len(fields) > 0 && !inList(t.Headers[i], fields) {
+				if len(fields) > 0 && !InList(t.Headers[i], fields) {
 					continue
 				}
 				if i == 0 {
@@ -71,7 +82,7 @@ func (ts Tables) PrintVertTable(output io.Writer, fields []string) {
 	for _, t := range ts {
 		for _, r := range t.Rows {
 			for i, c := range r {
-				if len(fields) > 0 && !inList(t.Headers[i], fields) {
+				if len(fields) > 0 && !InList(t.Headers[i], fields) {
 					continue
 				}
 				if i == 0 {

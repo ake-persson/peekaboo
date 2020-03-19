@@ -10,6 +10,7 @@ import (
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
+	"github.com/peekaboo-labs/peekaboo/pkg/text"
 )
 
 func ListGroups() (*services.ListGroupsResponse, error) {
@@ -37,7 +38,7 @@ func ListGroups() (*services.ListGroupsResponse, error) {
 		resp.Groups = append(resp.Groups, &resources.Group{
 			Groupname: a[0],
 			Gid:       gid,
-			Members:   splitOmitEmpty(a[3], ","),
+			Members:   text.Split(a[3], ","),
 		})
 	}
 

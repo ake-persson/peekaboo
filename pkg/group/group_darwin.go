@@ -11,6 +11,7 @@ import (
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
+	"github.com/peekaboo-labs/peekaboo/pkg/text"
 )
 
 func ListGroups() (*services.ListGroupsResponse, error) {
@@ -43,7 +44,7 @@ func ListGroups() (*services.ListGroupsResponse, error) {
 			g.GidSigned = signed
 			i++
 		case "users":
-			g.Members = splitOmitEmpty(kv[1], " ")
+			g.Members = text.Split(kv[1], " ")
 			i++
 		case "":
 			if i >= 3 {
