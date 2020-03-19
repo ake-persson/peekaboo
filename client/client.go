@@ -53,7 +53,7 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource> <address...>\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, `  resource
-    	Resource to query [system, users, groups, filesystems]
+    	Resource to query [system,users,groups,filesystems]
   address
         Address to agent specified as <address[:port]> (default port 17711)
 `)
