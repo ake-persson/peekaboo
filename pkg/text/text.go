@@ -23,10 +23,10 @@ func (ts Tables) PrintTable(output io.Writer) {
 	}
 
 	w := tabwriter.NewWriter(output, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, strings.Join(ts[0].Headers, "\t"))
+	fmt.Fprintln(w, fmt.Sprintf("%s%s\t%s%s%s", color.LightCyan, ts[0].Headers[0], color.Cyan, strings.Join(ts[0].Headers[1:], "\t"), color.Reset))
 	for _, t := range ts {
 		for _, r := range t.Rows {
-			fmt.Fprintln(w, strings.Join(r, "\t"))
+			fmt.Fprintln(w, fmt.Sprintf("%s%s\t%s%s%s", color.LightYellow, r[0], color.Yellow, strings.Join(r[1:], "\t"), color.Reset))
 		}
 	}
 
