@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mickep76/color"
 	"github.com/mitchellh/go-homedir"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -24,18 +25,37 @@ import (
 
 // TODO
 // - Set field order using flag
-// - Define color option
 // - Return error on invalid field
 
 type config struct {
-	NoTLS    bool
-	MTLS     bool // TBD
-	CertFile string
-	KeyFile  string
-	CAFile   string
-	Format   string
-	NoColor  bool
-	Fields   string
+	NoTLS        bool
+	MTLS         bool // TBD
+	CertFile     string
+	KeyFile      string
+	CAFile       string
+	Format       string
+	FormatColors string
+	NoColor      bool
+	Fields       string
+}
+
+var colorNames = map[string]color.Code{
+	"black":         color.Black,
+	"red":           color.Red,
+	"green":         color.Green,
+	"yellow":        color.Yellow,
+	"blue":          color.Blue,
+	"magenta":       color.Magenta,
+	"cyan":          color.Cyan,
+	"light-gray":    color.LightGray,
+	"dark-gray":     color.DarkGray,
+	"light-red":     color.LightRed,
+	"light-green":   color.LightGreen,
+	"light-yellow":  color.LightYellow,
+	"light-blue":    color.LightBlue,
+	"light-magenta": color.LightMagenta,
+	"light-cyan":    color.LightCyan,
+	"white":         color.White,
 }
 
 type envelope struct {
@@ -46,16 +66,6 @@ type envelope struct {
 
 var version = "undefined"
 
-func splitOmitEmpty(s string, del string) []string {
-	out := []string{}
-	for _, v := range strings.Split(s, del) {
-		if v != "" {
-			out = append(out, v)
-		}
-	}
-	return out
-}
-
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource> <address...>\n", os.Args[0])
 	flag.PrintDefaults()
@@ -64,6 +74,11 @@ func usage() {
   address
         Address to agent specified as <address[:port]> (default port 17711)
 `)
+	keys := []string{}
+	for k := range colorNames {
+		keys = append(keys, k)
+	}
+	fmt.Printf("\nAllowed colors:\n%s\n", strings.Join(keys, ", "))
 }
 
 func main() {
@@ -77,8 +92,10 @@ func main() {
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
 	flag.StringVar(&conf.Format, "fmt", "json", "Output format [json,csv,table,vtable]")
-	flag.BoolVar(&conf.NoColor, "no-color", false, "Output no color")
-	flag.StringVar(&conf.Fields, "fields", "", "Comma separate list of fields to output")
+	flag.StringVar(&conf.FormatColors, "fmt-cols", "light-cyan,light-yellow,cyan,yellow",
+		"Comma separated list of custom colors [header hostname,content hostname,headers,content]")
+	flag.BoolVar(&conf.NoColor, "no-cols", false, "Output no colors")
+	flag.StringVar(&conf.Fields, "fields", "", "Comma separated list of fields to output")
 	flag.BoolVar(&printVersion, "version", false, "Version")
 	flag.Parse()
 
@@ -109,6 +126,20 @@ func main() {
 	// Check format.
 	if !text.InList(conf.Format, []string{"json", "csv", "table", "vtable"}) {
 		log.Fatalf("unknown format: %s", conf.Format)
+	}
+
+	// Check colors.
+	fmtColors := []string{}
+	for _, c := range text.Split(conf.FormatColors, ",") {
+		if v, ok := colorNames[c]; ok {
+			fmtColors = append(fmtColors, v.String())
+		} else {
+			log.Fatalf("invalid color: %s", c)
+		}
+	}
+
+	if len(fmtColors) != 4 {
+		log.Fatalf("you need to specify 4 colors")
 	}
 
 	opts := []grpc.DialOption{grpc.WithBlock()}
@@ -154,11 +185,11 @@ func main() {
 		b, _ := json.MarshalIndent(responses, "", "  ")
 		fmt.Print(string(b))
 	case "csv":
-		tables.PrintCSV(os.Stdout, splitOmitEmpty(conf.Fields, ","))
+		tables.PrintCSV(os.Stdout, text.Split(conf.Fields, ","))
 	case "table":
-		tables.PrintTable(os.Stdout, splitOmitEmpty(conf.Fields, ","), conf.NoColor)
+		tables.PrintTable(os.Stdout, text.Split(conf.Fields, ","), conf.NoColor, fmtColors)
 	case "vtable":
-		tables.PrintVertTable(os.Stdout, splitOmitEmpty(conf.Fields, ","), conf.NoColor)
+		tables.PrintVertTable(os.Stdout, text.Split(conf.Fields, ","), conf.NoColor, fmtColors)
 	}
 }
 
