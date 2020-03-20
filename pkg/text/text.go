@@ -51,7 +51,7 @@ func (ts Tables) PrintTable(output io.Writer, fields []string, noColor bool, fmt
 		} else if i == 0 {
 			fmt.Fprintf(w, "%s%s%s\t", fmtColors[0], c, color.Reset)
 		} else {
-			fmt.Fprintf(w, "%s%s%s\t", fmtColors[1], c, color.Reset)
+			fmt.Fprintf(w, "%s%s%s\t", fmtColors[2], c, color.Reset)
 		}
 	}
 	fmt.Fprintln(w)
@@ -65,7 +65,7 @@ func (ts Tables) PrintTable(output io.Writer, fields []string, noColor bool, fmt
 				if noColor {
 					fmt.Fprintf(w, "%s\t", c)
 				} else if i == 0 {
-					fmt.Fprintf(w, "%s%s%s\t", fmtColors[2], c, color.Reset)
+					fmt.Fprintf(w, "%s%s%s\t", fmtColors[1], c, color.Reset)
 				} else {
 					fmt.Fprintf(w, "%s%s%s\t", fmtColors[3], c, color.Reset)
 				}
@@ -92,9 +92,9 @@ func (ts Tables) PrintVertTable(output io.Writer, fields []string, noColor bool,
 				if noColor {
 					fmt.Fprintf(w, "%s\t: %s\n", t.Headers[i], c)
 				} else if i == 0 {
-					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", fmtColors[0], t.Headers[i], fmtColors[2], c, color.Reset)
+					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", fmtColors[0], t.Headers[i], fmtColors[1], c, color.Reset)
 				} else {
-					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", fmtColors[1], t.Headers[i], fmtColors[3], c, color.Reset)
+					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", fmtColors[2], t.Headers[i], fmtColors[3], c, color.Reset)
 				}
 			}
 			fmt.Fprintln(w)
