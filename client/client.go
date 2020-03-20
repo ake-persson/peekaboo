@@ -82,7 +82,7 @@ func main() {
 	var printVersion bool
 	flag.Usage = usage
 	flag.BoolVar(&conf.NoTLS, "no-tls", false, "No TLS (testing)")
-	flag.BoolVar(&conf.MTLS, "mtls", false, "Use MTLS") // TBD
+	flag.BoolVar(&conf.MTLS, "mtls", false, "Use Mutual TLS, client and server certificate needs to be signed by the same CA authority to establish trust ...TBD...") // TBD
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
