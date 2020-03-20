@@ -24,8 +24,8 @@ import (
 
 // TODO
 // - Set field order using flag
-// - No color option
 // - Define color option
+// - Return error on invalid field
 
 type config struct {
 	NoTLS    bool
@@ -34,6 +34,7 @@ type config struct {
 	KeyFile  string
 	CAFile   string
 	Format   string
+	NoColor  bool
 	Fields   string
 }
 
@@ -76,6 +77,7 @@ func main() {
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
 	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
 	flag.StringVar(&conf.Format, "fmt", "json", "Output format [json,csv,table,vtable]")
+	flag.BoolVar(&conf.NoColor, "no-color", false, "Output no color")
 	flag.StringVar(&conf.Fields, "fields", "", "Comma separate list of fields to output")
 	flag.BoolVar(&printVersion, "version", false, "Version")
 	flag.Parse()
@@ -154,9 +156,9 @@ func main() {
 	case "csv":
 		tables.PrintCSV(os.Stdout, splitOmitEmpty(conf.Fields, ","))
 	case "table":
-		tables.PrintTable(os.Stdout, splitOmitEmpty(conf.Fields, ","))
+		tables.PrintTable(os.Stdout, splitOmitEmpty(conf.Fields, ","), conf.NoColor)
 	case "vtable":
-		tables.PrintVertTable(os.Stdout, splitOmitEmpty(conf.Fields, ","))
+		tables.PrintVertTable(os.Stdout, splitOmitEmpty(conf.Fields, ","), conf.NoColor)
 	}
 }
 

@@ -36,7 +36,7 @@ type Table struct {
 
 type Tables []*Table
 
-func (ts Tables) PrintTable(output io.Writer, fields []string) {
+func (ts Tables) PrintTable(output io.Writer, fields []string, noColor bool) {
 	if len(ts) < 1 {
 		return
 	}
@@ -46,7 +46,9 @@ func (ts Tables) PrintTable(output io.Writer, fields []string) {
 		if len(fields) > 0 && !InList(ts[0].Headers[i], fields) {
 			continue
 		}
-		if i == 0 {
+		if noColor {
+			fmt.Fprintf(w, "%s\t", c)
+		} else if i == 0 {
 			fmt.Fprintf(w, "%s%s%s\t", color.LightCyan, c, color.Reset)
 		} else {
 			fmt.Fprintf(w, "%s%s%s\t", color.Cyan, c, color.Reset)
@@ -60,7 +62,9 @@ func (ts Tables) PrintTable(output io.Writer, fields []string) {
 				if len(fields) > 0 && !InList(t.Headers[i], fields) {
 					continue
 				}
-				if i == 0 {
+				if noColor {
+					fmt.Fprintf(w, "%s\t", c)
+				} else if i == 0 {
 					fmt.Fprintf(w, "%s%s%s\t", color.LightYellow, c, color.Reset)
 				} else {
 					fmt.Fprintf(w, "%s%s%s\t", color.Yellow, c, color.Reset)
@@ -73,7 +77,7 @@ func (ts Tables) PrintTable(output io.Writer, fields []string) {
 	w.Flush()
 }
 
-func (ts Tables) PrintVertTable(output io.Writer, fields []string) {
+func (ts Tables) PrintVertTable(output io.Writer, fields []string, noColor bool) {
 	if len(ts) < 1 {
 		return
 	}
@@ -85,7 +89,9 @@ func (ts Tables) PrintVertTable(output io.Writer, fields []string) {
 				if len(fields) > 0 && !InList(t.Headers[i], fields) {
 					continue
 				}
-				if i == 0 {
+				if noColor {
+					fmt.Fprintf(w, "%s\t: %s\n", t.Headers[i], c)
+				} else if i == 0 {
 					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", color.LightCyan, t.Headers[i], color.LightYellow, c, color.Reset)
 				} else {
 					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", color.Cyan, t.Headers[i], color.Yellow, c, color.Reset)
