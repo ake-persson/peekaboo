@@ -13,25 +13,32 @@ This is a re-factoring of the original [Peekaboo](https://github.com/imc-trading
 ## Usage
 
 ```
-Usage: client [options] <resource> <address...>
+Usage: ./client [options] <resource> <address...>
   -ca-file string
-        CA certificate file, required for Mutual TLS (default "~/certs/root_ca.crt")
+    	CA certificate file, required for Mutual TLS (default "~/certs/root_ca.crt")
   -cert-file string
-        Server TLS certificate file (default "~/certs/srv.crt")
+    	Server TLS certificate file (default "~/certs/srv.crt")
+  -colors string
+    	Comma separated list of output colors [black,red,green,yellow,blue,magenta,cyan,light-gray,
+    	dark-gray,light-red,light-green,light-yellow,light-blue,light-magenta,light-cyan,white]
+    	
+    	hostname header,hostname content,headers,content (default "light-cyan,light-yellow,cyan,yellow")
   -fields string
-        Comma separate list of fields to output
+    	Comma separated list of fields to output
   -fmt string
-        Output format [json,csv,table,vtable] (default "json")
+    	Output format [json,csv,table,vtable] (default "json")
   -key-file string
-        Server TLS key file (default "~/certs/srv.key")
+    	Server TLS key file (default "~/certs/srv.key")
   -mtls
-        Use MTLS
+    	Use Mutual TLS, client and server certificate needs to be signed by the same CA authority to establish trust ...TBD...
+  -no-color
+    	No color output
   -no-tls
-        No TLS (testing)
+    	No TLS (testing)
   -version
-        Version
+    	Version
   resource
-        Resource to query [system,users,groups,filesystems]
+    	Resource to query [system,users,groups,filesystems]
   address
         Address to agent specified as <address[:port]> (default port 17711)
 ```
