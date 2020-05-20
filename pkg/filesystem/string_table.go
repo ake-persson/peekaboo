@@ -7,8 +7,6 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
 )
 
-// How to add as a method for Filesystem
-
 var Headers = []string{
 	"filesystem",
 	"type",
