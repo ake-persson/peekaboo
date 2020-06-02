@@ -29,21 +29,14 @@ func InList(a string, l []string) bool {
 	return false
 }
 
-type Table struct {
-	Headers []string
-	Rows    [][]string
-}
-
-type Tables []*Table
-
-func (ts Tables) PrintTable(output io.Writer, fields []string, noColor bool, fmtColors []string) {
-	if len(ts) < 1 {
+func PrintTable(out io.Writer, fields []string, noColor bool, fmtColors []string, rows [][]string) {
+	if len(rows) < 1 {
 		return
 	}
 
-	w := tabwriter.NewWriter(output, 0, 0, 2, ' ', 0)
-	for i, c := range ts[0].Headers {
-		if len(fields) > 0 && !InList(ts[0].Headers[i], fields) {
+	w := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
+	for i, c := range rows[0] {
+		if len(fields) > 0 && !InList(rows[0][i], fields) {
 			continue
 		}
 		if noColor {
@@ -56,62 +49,56 @@ func (ts Tables) PrintTable(output io.Writer, fields []string, noColor bool, fmt
 	}
 	fmt.Fprintln(w)
 
-	for _, t := range ts {
-		for _, r := range t.Rows {
-			for i, c := range r {
-				if len(fields) > 0 && !InList(t.Headers[i], fields) {
-					continue
-				}
-				if noColor {
-					fmt.Fprintf(w, "%s\t", c)
-				} else if i == 0 {
-					fmt.Fprintf(w, "%s%s%s\t", fmtColors[1], c, color.Reset)
-				} else {
-					fmt.Fprintf(w, "%s%s%s\t", fmtColors[3], c, color.Reset)
-				}
+	for _, r := range rows {
+		for i, c := range r {
+			if len(fields) > 0 && !InList(rows[0][i], fields) {
+				continue
 			}
-			fmt.Fprintln(w)
+			if noColor {
+				fmt.Fprintf(w, "%s\t", c)
+			} else if i == 0 {
+				fmt.Fprintf(w, "%s%s%s\t", fmtColors[1], c, color.Reset)
+			} else {
+				fmt.Fprintf(w, "%s%s%s\t", fmtColors[3], c, color.Reset)
+			}
 		}
+		fmt.Fprintln(w)
 	}
 
 	w.Flush()
 }
 
-func (ts Tables) PrintVertTable(output io.Writer, fields []string, noColor bool, fmtColors []string) {
-	if len(ts) < 1 {
+func PrintVertTable(out io.Writer, fields []string, noColor bool, fmtColors []string, rows [][]string) {
+	if len(rows) < 1 {
 		return
 	}
 
-	w := tabwriter.NewWriter(output, 0, 0, 2, ' ', 0)
-	for _, t := range ts {
-		for _, r := range t.Rows {
-			for i, c := range r {
-				if len(fields) > 0 && !InList(t.Headers[i], fields) {
-					continue
-				}
-				if noColor {
-					fmt.Fprintf(w, "%s\t: %s\n", t.Headers[i], c)
-				} else if i == 0 {
-					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", fmtColors[0], t.Headers[i], fmtColors[1], c, color.Reset)
-				} else {
-					fmt.Fprintf(w, "%s%s\t: %s%s%s\n", fmtColors[2], t.Headers[i], fmtColors[3], c, color.Reset)
-				}
+	w := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
+	for _, r := range rows {
+		for i, c := range r {
+			if len(fields) > 0 && !InList(rows[0][i], fields) {
+				continue
 			}
-			fmt.Fprintln(w)
+			if noColor {
+				fmt.Fprintf(w, "%s\t: %s\n", rows[0][i], c)
+			} else if i == 0 {
+				fmt.Fprintf(w, "%s%s\t: %s%s%s\n", fmtColors[0], rows[0][i], fmtColors[1], c, color.Reset)
+			} else {
+				fmt.Fprintf(w, "%s%s\t: %s%s%s\n", fmtColors[2], rows[0][i], fmtColors[3], c, color.Reset)
+			}
 		}
+		fmt.Fprintln(w)
 	}
 
 	w.Flush()
 }
 
-func (ts Tables) PrintCSV(output io.Writer, fields []string) {
-	if len(ts) < 1 {
-		return
-	}
-
-	w := csv.NewWriter(output)
-	w.Write(ts[0].Headers)
-	for _, t := range ts {
-		w.WriteAll(t.Rows)
-	}
+func PrintCSV(out io.Writer, fields []string, rows [][]string) {
+	w := csv.NewWriter(out)
+	// Support fields
+	// w.Write(rows[0])
+	//	for _, r := range rows {
+	//		w.WriteAll(r)
+	//	}
+	w.Flush()
 }

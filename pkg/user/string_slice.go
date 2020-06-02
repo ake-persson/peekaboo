@@ -17,7 +17,7 @@ var Headers = []string{
 	"shell",
 }
 
-func ToTable(hostname string, users []*resources.User) *text.Table {
+func StringSlice(u *resources.User) []string {
 	return []string{
 		u.Username,
 		u.Comment,

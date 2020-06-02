@@ -25,7 +25,7 @@ var Headers = []string{
 }
 
 func StringSlice(f *resources.Filesystem) []string {
-	return []String{
+	return []string{
 		f.Filesystem,
 		f.Type,
 		fmt.Sprintf("%dK", f.SizeKb),
