@@ -74,7 +74,7 @@ func PrintVertTable(out io.Writer, fields []string, noColor bool, fmtColors []st
 	}
 
 	w := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
-	for _, r := range rows {
+	for _, r := range rows[1:] {
 		for i, c := range r {
 			if len(fields) > 0 && !InList(rows[0][i], fields) {
 				continue
@@ -95,10 +95,6 @@ func PrintVertTable(out io.Writer, fields []string, noColor bool, fmtColors []st
 
 func PrintCSV(out io.Writer, fields []string, rows [][]string) {
 	w := csv.NewWriter(out)
-	// Support fields
-	// w.Write(rows[0])
-	//	for _, r := range rows {
-	//		w.WriteAll(r)
-	//	}
+	w.WriteAll(rows)
 	w.Flush()
 }

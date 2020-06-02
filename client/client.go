@@ -237,8 +237,8 @@ func dialAgentTable(resource string, addr string, opts []grpc.DialOption) ([][]s
 			return nil, err
 		}
 		return [][]string{
-			system.Headers,
-			system.StringSlice(resp),
+			append([]string{"addr"}, system.Headers...),
+			append([]string{addr}, system.StringSlice(resp)...),
 		}, nil
 	case "users":
 		resp, err := client.ListUsers(ctx, &services.ListUsersRequest{})
@@ -246,10 +246,11 @@ func dialAgentTable(resource string, addr string, opts []grpc.DialOption) ([][]s
 			return nil, err
 		}
 		rows := [][]string{
-			user.Headers,
+			append([]string{"addr"}, user.Headers...),
 		}
 		for _, u := range resp.Users {
-			rows = append(rows, user.StringSlice(u))
+			r := []string{addr}
+			rows = append(rows, append(r, user.StringSlice(u)...))
 		}
 		return rows, nil
 	case "groups":
@@ -258,10 +259,11 @@ func dialAgentTable(resource string, addr string, opts []grpc.DialOption) ([][]s
 			return nil, err
 		}
 		rows := [][]string{
-			group.Headers,
+			append([]string{"addr"}, group.Headers...),
 		}
 		for _, g := range resp.Groups {
-			rows = append(rows, group.StringSlice(g))
+			r := []string{addr}
+			rows = append(rows, append(r, group.StringSlice(g)...))
 		}
 		return rows, nil
 	case "filesystems":
@@ -270,10 +272,11 @@ func dialAgentTable(resource string, addr string, opts []grpc.DialOption) ([][]s
 			return nil, err
 		}
 		rows := [][]string{
-			group.Headers,
+			append([]string{"addr"}, filesystem.Headers...),
 		}
 		for _, f := range resp.Filesystems {
-			rows = append(rows, filesystem.StringSlice(f))
+			r := []string{addr}
+			rows = append(rows, append(r, filesystem.StringSlice(f)...))
 		}
 		return rows, nil
 	}
