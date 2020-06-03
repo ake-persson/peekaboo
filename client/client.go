@@ -23,10 +23,6 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/user"
 )
 
-// TODO
-// - Set field order using flag
-// - Return error on invalid field
-
 type config struct {
 	NoTLS        bool
 	MTLS         bool // TBD
@@ -152,7 +148,7 @@ func main() {
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	}
 
-	tables := text.Tables{}
+	rows := [][]string{}
 	responses := []interface{}{}
 	for _, addr := range addresses {
 		if !strings.Contains(addr, ":") {
@@ -167,11 +163,11 @@ func main() {
 			}
 			responses = append(responses, resp)
 		case "csv", "table", "vtable":
-			t, err := dialAgentTable(resource, addr, opts)
+			r, err := dialAgentTable(resource, addr, opts)
 			if err != nil {
 				log.Print(err)
 			}
-			tables = append(tables, t)
+			rows = append(rows, r...)
 		default:
 			log.Fatalf("unknown output format: %s", conf.Format)
 		}
@@ -182,11 +178,11 @@ func main() {
 		b, _ := json.MarshalIndent(responses, "", "  ")
 		fmt.Print(string(b))
 	case "csv":
-		tables.PrintCSV(os.Stdout, text.Split(conf.Fields, ","))
+		text.PrintCSV(os.Stdout, text.Split(conf.Fields, ","), rows)
 	case "table":
-		tables.PrintTable(os.Stdout, text.Split(conf.Fields, ","), conf.NoColor, fmtColors)
+		text.PrintTable(os.Stdout, text.Split(conf.Fields, ","), conf.NoColor, fmtColors, rows)
 	case "vtable":
-		tables.PrintVertTable(os.Stdout, text.Split(conf.Fields, ","), conf.NoColor, fmtColors)
+		text.PrintVertTable(os.Stdout, text.Split(conf.Fields, ","), conf.NoColor, fmtColors, rows)
 	}
 }
 
@@ -207,6 +203,7 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) (interface{
 
 	switch resource {
 	case "system":
+		// Customize fields for table
 		return client.GetSystem(ctx, &services.GetSystemRequest{})
 	case "users":
 		return client.ListUsers(ctx, &services.ListUsersRequest{})
@@ -219,7 +216,7 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) (interface{
 	return nil, fmt.Errorf("unknown resource: %s", resource)
 }
 
-func dialAgentTable(resource string, addr string, opts []grpc.DialOption) (*text.Table, error) {
+func dialAgentTable(resource string, addr string, opts []grpc.DialOption) ([][]string, error) {
 	// Connect to gRPC server.
 	conn, err := grpc.Dial(addr, opts...)
 	if err != nil {
@@ -240,25 +237,49 @@ func dialAgentTable(resource string, addr string, opts []grpc.DialOption) (*text
 		if err != nil {
 			return nil, err
 		}
-		return system.ToTable(resp), nil
+		return [][]string{
+			append([]string{"addr"}, system.Headers...),
+			append([]string{addr}, system.StringSlice(resp)...),
+		}, nil
 	case "users":
 		resp, err := client.ListUsers(ctx, &services.ListUsersRequest{})
 		if err != nil {
 			return nil, err
 		}
-		return user.ToTable(resp.Hostname, resp.Users), nil
+		rows := [][]string{
+			append([]string{"addr"}, user.Headers...),
+		}
+		for _, u := range resp.Users {
+			r := []string{addr}
+			rows = append(rows, append(r, user.StringSlice(u)...))
+		}
+		return rows, nil
 	case "groups":
 		resp, err := client.ListGroups(ctx, &services.ListGroupsRequest{})
 		if err != nil {
 			return nil, err
 		}
-		return group.ToTable(resp.Hostname, resp.Groups), nil
+		rows := [][]string{
+			append([]string{"addr"}, group.Headers...),
+		}
+		for _, g := range resp.Groups {
+			r := []string{addr}
+			rows = append(rows, append(r, group.StringSlice(g)...))
+		}
+		return rows, nil
 	case "filesystems":
 		resp, err := client.ListFilesystems(ctx, &services.ListFilesystemsRequest{})
 		if err != nil {
 			return nil, err
 		}
-		return filesystem.ToTable(resp.Hostname, resp.Filesystems), nil
+		rows := [][]string{
+			append([]string{"addr"}, filesystem.Headers...),
+		}
+		for _, f := range resp.Filesystems {
+			r := []string{addr}
+			rows = append(rows, append(r, filesystem.StringSlice(f)...))
+		}
+		return rows, nil
 	}
 
 	return nil, fmt.Errorf("unknown resource: %s", resource)
