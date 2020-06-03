@@ -203,6 +203,7 @@ func dialAgent(resource string, addr string, opts []grpc.DialOption) (interface{
 
 	switch resource {
 	case "system":
+		// Customize fields for table
 		return client.GetSystem(ctx, &services.GetSystemRequest{})
 	case "users":
 		return client.ListUsers(ctx, &services.ListUsersRequest{})

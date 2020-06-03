@@ -49,7 +49,7 @@ func PrintTable(out io.Writer, fields []string, noColor bool, fmtColors []string
 	}
 	fmt.Fprintln(w)
 
-	for _, r := range rows {
+	for _, r := range rows[1:] {
 		for i, c := range r {
 			if len(fields) > 0 && !InList(rows[0][i], fields) {
 				continue
