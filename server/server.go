@@ -26,37 +26,23 @@ type server struct {
 }
 
 type config struct {
-	InfoFile    string
-	Addr        string
-	CatalogAddr string
-	KeepAlive   int
-	Register    bool
-	NoTLS       bool
-	MTLS        bool // TBD
-	CertFile    string
-	KeyFile     string
-	CAFile      string
-	Level       zapcore.Level // TBD
-}
-
-type info struct {
-	Description  string `yaml:"description"`
-	Site         string `yaml:"site"`
-	Rack         string `yaml:"rack"`
-	RackPosition int32  `yaml:"rackPosition"`
-	RackSize     int32  `yaml:"rackSize"`
+	Addr     string
+	NoTLS    bool
+	NoVerify bool
+	MTLS     bool // TBD
+	CertFile string
+	KeyFile  string
+	CAFile   string
+	Level    zapcore.Level // TBD
 }
 
 func main() {
 	// Setup config and flags.
 	conf := &config{}
 	var printVersion bool
-	flag.StringVar(&conf.InfoFile, "info-file", "~/etc/peekaboo.yml", "System info file")
 	flag.StringVar(&conf.Addr, "addr", "localhost:17711", "Server address")
-	flag.StringVar(&conf.CatalogAddr, "ctlg-addr", "catalog:28657", "Catalog address")
-	flag.IntVar(&conf.KeepAlive, "keepalive", 60*5, "Keepalive intervall in seconds")
-	flag.BoolVar(&conf.Register, "register", false, "Register with Catalog")
 	flag.BoolVar(&conf.NoTLS, "no-tls", false, "No TLS (testing)")
+	flag.BoolVar(&conf.NoVerify, "no-verify", false, "No verify TLS (testing)")
 	flag.BoolVar(&conf.MTLS, "mtls", false, "Use MTLS") // TBD
 	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
 	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
@@ -70,7 +56,6 @@ func main() {
 	}
 
 	// Replace tilde with home directory.
-	conf.InfoFile, _ = homedir.Expand(conf.InfoFile)
 	conf.CertFile, _ = homedir.Expand(conf.CertFile)
 	conf.KeyFile, _ = homedir.Expand(conf.KeyFile)
 	conf.CAFile, _ = homedir.Expand(conf.CAFile)
@@ -78,29 +63,6 @@ func main() {
 	// Setup logger.
 	logger, _ := zap.NewDevelopment()
 	defer logger.Sync()
-
-	// Load info file if it exist's.
-	i := &info{}
-	if _, err := os.Stat(conf.InfoFile); !os.IsNotExist(err) {
-		b, err := ioutil.ReadFile(conf.InfoFile)
-		if err != nil {
-			logger.Fatal("info file", zap.Error(err))
-		}
-
-		if err = yaml.Unmarshal(b, i); err != nil {
-			logger.Fatal("unmarshal", zap.Error(err))
-		}
-	} else {
-		logger.Debug("skipping info file since it's doesn't exist", zap.String("file", conf.InfoFile))
-	}
-
-	// Register with Catalog.
-	if conf.Register {
-		if err := registerSystem(conf); err != nil {
-			logger.Fatal("failed to register",
-				zap.Error(err))
-		}
-	}
 
 	// Setup server options.
 	opts := []grpc.ServerOption{
