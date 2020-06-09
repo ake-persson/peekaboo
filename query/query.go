@@ -23,36 +23,7 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/user"
 )
 
-type config struct {
-	NoTLS        bool
-	MTLS         bool // TBD
-	CertFile     string
-	KeyFile      string
-	CAFile       string
-	Format       string
-	FormatColors string
-	NoColor      bool
-	Fields       string
-}
-
-var colorNames = map[string]color.Code{
-	"black":         color.Black,
-	"red":           color.Red,
-	"green":         color.Green,
-	"yellow":        color.Yellow,
-	"blue":          color.Blue,
-	"magenta":       color.Magenta,
-	"cyan":          color.Cyan,
-	"light-gray":    color.LightGray,
-	"dark-gray":     color.DarkGray,
-	"light-red":     color.LightRed,
-	"light-green":   color.LightGreen,
-	"light-yellow":  color.LightYellow,
-	"light-blue":    color.LightBlue,
-	"light-magenta": color.LightMagenta,
-	"light-cyan":    color.LightCyan,
-	"white":         color.White,
-}
+var version = "undefined"
 
 type envelope struct {
 	Address  string      `json:"address"`
@@ -60,16 +31,21 @@ type envelope struct {
 	Error    error       `json:"error,omitempty"`
 }
 
-var version = "undefined"
+func usage(flags *flag.FlagSet, stdout io.Writer) func() {
+	return func() {
+		fmt.Fprintf(stdout, `Usage: %s [OPTIONS] COMMAND
 
-func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] <resource> <address...>\n", os.Args[0])
-	flag.PrintDefaults()
-	fmt.Fprintf(os.Stderr, `  resource
-    	Resource to query [system,users,groups,filesystems]
-  address
-        Address to agent specified as <address[:port]> (default port 17711)
+Micro-service for exposing system and hardware information
+
+Options:
+`, os.Args[0])
+		flags.PrintDefaults()
+		fmt.Fprintf(stdout, `
+Commands:
+  serve     Serve API.
+  query     Query API from one or more servers.
 `)
+	}
 }
 
 func main() {

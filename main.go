@@ -3,67 +3,80 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	"io"
 	"os"
+
+	"github.com/peekaboo-labs/serve"
 )
 
-type config struct {
-	NoTLS    bool
-	NoVerify bool
-	NoMTLS   bool
-	CertFile string
-	KeyFile  string
-	CAFile   string
-}
+var version = "undefined"
 
-func usage() {
-	fmt.Fprintf(os.Stderr, `Usage: %s [OPTIONS] COMMAND
+func usage(flags *flag.FlagSet, stdout io.Writer) func() {
+	return func() {
+		fmt.Fprintf(stdout, `Usage: %s [OPTIONS] COMMAND
 
 Micro-service for exposing system and hardware information
 
 Options:
 `, os.Args[0])
-	flag.PrintDefaults()
-	fmt.Fprintf(os.Stderr, `
+		flags.PrintDefaults()
+		fmt.Fprintf(stdout, `
 Commands:
   serve     Serve API.
   query     Query API from one or more servers.
 `)
+	}
 }
 
-var version = "undefined"
-
+// Abstract main so we can test it as a regular function.
 func main() {
-	// Setup config and flags.
-	conf := &config{}
-	var printVersion bool
-	flag.BoolVar(&conf.NoTLS, "no-tls", false, "No TLS (testing)")
-	flag.BoolVar(&conf.NoVerify, "no-verify", false, "No TLS verify, for self-signed certificates (testing)")
-	flag.BoolVar(&conf.NoMTLS, "no-mtls", true, "No Mutual TLS, client and server certificate needs to be signed by the same CA authority to establish trust")
-	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
-	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
-	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
-	flag.BoolVar(&printVersion, "version", false, "Version")
-	flag.Usage = usage
-	flag.Parse()
+	if err := run(os.Args, os.Stdout); err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
+}
 
-	// Peint version.
-	if printVersion {
-		fmt.Printf("%s\n", version)
-		os.Exit(0)
+func run(args []string, stdout io.Writer) error {
+	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
+	flags.Usage = usage(flags, stdout)
+	var (
+		noTLS        = flags.Bool("no-tls", false, "No TLS (testing)")
+		noMTLS       = flags.Bool("no-mtls", true, "No Mutual TLS, client and server certificate needs to be signed by the same CA authority to establish trust")
+		noVerify     = flags.Bool("no-verify", false, "No TLS verify, for self-signed certificates (testing)")
+		certFile     = flags.String("cert-file", "~/certs/srv.crt", "Server TLS certificate file")
+		keyFile      = flag.String("key-file", "~/certs/srv.key", "Server TLS key file")
+		caFile       = flag.String("ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
+		printVersion = flag.Bool("version", false, "Version")
+	)
+	flags.Usage = usage(flags, stdout)
+	if err := flags.Parse(args[1:]); err != nil {
+		return err
+	}
+
+	// Print version.
+	if *printVersion {
+		fmt.Fprintf(stdout, "%s\n", version)
+		return nil
 	}
 
 	// Check command.
 	if len(flag.Args()) < 1 {
-		usage()
-		os.Exit(1)
+		usage(flags, stdout)()
+		return fmt.Errorf("no command specified")
 	}
 
 	// Run command.
 	switch os.Args[1] {
 	case "serve":
+		return serve.Run(&serve.Options{
+			NoTLS:    *noTLS,
+			NoMTLS:   *noMTLS,
+			NoVerify: *noVerify,
+			CertFile: *certFile,
+			KeyFile:  *keyFile,
+			CAFile:   *caFile})
 	case "query":
-	default:
-		log.Fatalf("unknown command: %s", os.Args[1])
 	}
+
+	return fmt.Errorf("unknown command: %s", os.Args[1])
 }

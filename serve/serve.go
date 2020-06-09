@@ -19,41 +19,43 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 )
 
-var version = "undefined"
-
 type server struct {
 	logger *zap.Logger
 }
 
-type config struct {
-	Addr     string
+type Options struct {
 	NoTLS    bool
 	NoVerify bool
-	MTLS     bool // TBD
+	NoMTLS   bool
 	CertFile string
 	KeyFile  string
 	CAFile   string
-	Level    zapcore.Level // TBD
 }
 
-func main() {
-	// Setup config and flags.
-	conf := &config{}
-	var printVersion bool
-	flag.StringVar(&conf.Addr, "addr", "localhost:17711", "Server address")
-	flag.BoolVar(&conf.NoTLS, "no-tls", false, "No TLS (testing)")
-	flag.BoolVar(&conf.NoVerify, "no-verify", false, "No verify TLS (testing)")
-	flag.BoolVar(&conf.MTLS, "mtls", false, "Use MTLS") // TBD
-	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
-	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
-	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
-	flag.BoolVar(&printVersion, "version", false, "Version")
-	flag.Parse()
+func usage(flags *flag.FlagSet, stdout io.Writer) func() {
+        return func() {
+                fmt.Fprintf(stdout, `Usage: %s serve [OPTIONS]
 
-	if printVersion {
-		fmt.Printf("%s\n", version)
-		os.Exit(0)
-	}
+Serve API
+
+Options:
+`, os.Args[0])
+                flags.PrintDefaults()
+        }
+}
+
+func Run(args []string, opts *Options) error {
+	var addr := flags.String("addr", "localhost:17711", "Server address")
+
+        flags := flag.NewFlagSet(args, flag.ExitOnError)
+        flags.Usage = usage(flags, stdout)
+        var (
+	addr := flags.String("addr", "localhost:17711", "Server address")
+        )
+        flags.Usage = usage(flags, stdout)
+        if err := flags.Parse(args); err != nil {
+                return err
+        }
 
 	// Replace tilde with home directory.
 	conf.CertFile, _ = homedir.Expand(conf.CertFile)
