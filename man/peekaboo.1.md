@@ -8,8 +8,8 @@ peekaboo - service for exposing system and hardware information.
 
 # SYNOPSIS
 
-**peekaboo** [**-h**] [**-version**] [**-ca-file** *FILE*] [**-cert-file** *FILE*] [**-key-file** *FILE*] [**-no-tls**] [**-no-verify**] [**-mtls**]  <**resource**> <**address...**>
-**peekaboo** **agent** [**-h**] [**-version**] [**-bind** *ADDR*] [**-ca-file** *FILE*] [**-cert-file** *FILE*] [**-key-file** *FILE*] [**-no-tls**] [**-no-verify**] [**-mtls**]
+**peekaboo** query [**-h**] [**-version**] [**-ca-file** *FILE*] [**-cert-file** *FILE*] [**-key-file** *FILE*] [**-no-tls**] [**-no-verify**] [**-mtls**]  <**resource**> <**address...**>
+**peekaboo** agent [**-h**] [**-version**] [**-bind** *ADDR*] [**-ca-file** *FILE*] [**-cert-file** *FILE*] [**-key-file** *FILE*] [**-no-tls**] [**-no-verify**] [**-mtls**]
 
 # DESCRIPTION
 
@@ -56,7 +56,15 @@ Service for exposing system and hardware information.
 **-no-color**
 :	No color output
 
-# POSITIONAL ARGUMENTS
+# COMMANDS
+
+**server**
+:	Run peekaboo as an server on a machine.
+
+**client**
+:	Run peekaboo as a client and query one or multiple servers.
+
+# ARGUMENTS
 
 **resource**
 :	Resource to query [system,users,groups,filesystems]
