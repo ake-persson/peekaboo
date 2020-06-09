@@ -6,7 +6,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/peekaboo-labs/serve"
+	"github.com/peekaboo-labs/peekaboo/query"
+	"github.com/peekaboo-labs/peekaboo/serve"
 )
 
 var version = "undefined"
@@ -38,6 +39,7 @@ func main() {
 
 func run(args []string, stdout io.Writer) error {
 	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
+	flags.SetOutput(stdout)
 	flags.Usage = usage(flags, stdout)
 	var (
 		noTLS        = flags.Bool("no-tls", false, "No TLS (testing)")
@@ -48,7 +50,6 @@ func run(args []string, stdout io.Writer) error {
 		caFile       = flag.String("ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
 		printVersion = flag.Bool("version", false, "Version")
 	)
-	flags.Usage = usage(flags, stdout)
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
 	}
@@ -68,7 +69,7 @@ func run(args []string, stdout io.Writer) error {
 	// Run command.
 	switch os.Args[1] {
 	case "serve":
-		return serve.Run(&serve.Options{
+		return serve.Run(flag.Args(), stdout, &serve.Options{
 			NoTLS:    *noTLS,
 			NoMTLS:   *noMTLS,
 			NoVerify: *noVerify,
@@ -76,6 +77,13 @@ func run(args []string, stdout io.Writer) error {
 			KeyFile:  *keyFile,
 			CAFile:   *caFile})
 	case "query":
+		return query.Run(flag.Args(), stdout, &serve.Options{
+			NoTLS:    *noTLS,
+			NoMTLS:   *noMTLS,
+			NoVerify: *noVerify,
+			CertFile: *certFile,
+			KeyFile:  *keyFile,
+			CAFile:   *caFile})
 	}
 
 	return fmt.Errorf("unknown command: %s", os.Args[1])

@@ -1,16 +1,17 @@
-package main
+package query
 
 import (
 	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/mickep76/color"
+	//	"github.com/mickep76/color"
 	"github.com/mitchellh/go-homedir"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -23,7 +24,14 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/user"
 )
 
-var version = "undefined"
+type Options struct {
+	NoTLS    bool
+	NoVerify bool
+	NoMTLS   bool
+	CertFile string
+	KeyFile  string
+	CAFile   string
+}
 
 type envelope struct {
 	Address  string      `json:"address"`
@@ -33,68 +41,55 @@ type envelope struct {
 
 func usage(flags *flag.FlagSet, stdout io.Writer) func() {
 	return func() {
-		fmt.Fprintf(stdout, `Usage: %s [OPTIONS] COMMAND
+		fmt.Fprintf(stdout, `Usage: %s serve [OPTIONS]
 
-Micro-service for exposing system and hardware information
+Serve API
 
 Options:
 `, os.Args[0])
 		flags.PrintDefaults()
-		fmt.Fprintf(stdout, `
-Commands:
-  serve     Serve API.
-  query     Query API from one or more servers.
-`)
 	}
 }
 
-func main() {
-	// Setup config and flags.
-	conf := &config{}
-	var printVersion bool
-	flag.Usage = usage
-	flag.BoolVar(&conf.NoTLS, "no-tls", false, "No TLS (testing)")
-	flag.BoolVar(&conf.MTLS, "mtls", false, "Use Mutual TLS, client and server certificate needs to be signed by the same CA authority to establish trust ...TBD...") // TBD
-	flag.StringVar(&conf.CertFile, "cert-file", "~/certs/srv.crt", "Server TLS certificate file")
-	flag.StringVar(&conf.KeyFile, "key-file", "~/certs/srv.key", "Server TLS key file")
-	flag.StringVar(&conf.CAFile, "ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
-	flag.StringVar(&conf.Format, "fmt", "json", "Output format [json,csv,table,vtable]")
-	flag.StringVar(&conf.FormatColors, "colors", "light-cyan,light-yellow,cyan,yellow",
-		"Comma separated list of output colors [black,red,green,yellow,blue,magenta,cyan,light-gray,\n"+
-			"dark-gray,light-red,light-green,light-yellow,light-blue,light-magenta,light-cyan,white]\n\n"+
-			"hostname header,hostname content,headers,content")
-	flag.BoolVar(&conf.NoColor, "no-color", false, "No color output")
-	flag.StringVar(&conf.Fields, "fields", "", "Comma separated list of fields to output")
-	flag.BoolVar(&printVersion, "version", false, "Version")
-	flag.Parse()
-
-	if printVersion {
-		fmt.Printf("%s\n", version)
-		os.Exit(0)
+func Run(args []string, stdout io.Writer, opts *Options) error {
+	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
+	flags.SetOutput(stdout)
+	flags.Usage = usage(flags, stdout)
+	var (
+		format = flags.String("fmt", "json", "Output format [json,csv,table,vtable]")
+		/*	colors = flags.String("colors", "light-cyan,light-yellow,cyan,yellow",
+			"Comma separated list of output colors [black,red,green,yellow,blue,magenta,cyan,light-gray,\n"+
+				"dark-gray,light-red,light-green,light-yellow,light-blue,light-magenta,light-cyan,white]\n\n"+
+				"hostname header,hostname content,headers,content")
+		noColor = flags.Bool("no-color", false, "No color output")*/
+		fields = flags.String("fields", "", "Comma separated list of fields to output")
+	)
+	if err := flags.Parse(args); err != nil {
+		return err
 	}
 
-	if len(flag.Args()) < 2 {
-		usage()
-		os.Exit(1)
+	if len(flags.Args()) < 2 {
+		usage(flags, stdout)()
+		return fmt.Errorf("")
 	}
 
 	// Positional arguments.
-	resource := flag.Args()[0]
-	addresses := flag.Args()[1:]
+	resource := flags.Args()[0]
+	addresses := flags.Args()[1:]
 
 	// Replace tilde with home directory.
-	conf.CertFile, _ = homedir.Expand(conf.CertFile)
-	conf.KeyFile, _ = homedir.Expand(conf.KeyFile)
-	conf.CAFile, _ = homedir.Expand(conf.CAFile)
+	opts.CertFile, _ = homedir.Expand(opts.CertFile)
+	opts.KeyFile, _ = homedir.Expand(opts.KeyFile)
+	opts.CAFile, _ = homedir.Expand(opts.CAFile)
 
 	// Check resource.
 	if !text.InList(resource, []string{"system", "users", "groups", "filesystems"}) {
-		log.Fatalf("unknown resource: %s", resource)
+		return fmt.Errorf("unknown resource: %s", resource)
 	}
 
 	// Check format.
-	if !text.InList(conf.Format, []string{"json", "csv", "table", "vtable"}) {
-		log.Fatalf("unknown format: %s", conf.Format)
+	if !text.InList(*format, []string{"json", "csv", "table", "vtable"}) {
+		return fmt.Errorf("unknown format: %s", *format)
 	}
 
 	// Check colors.

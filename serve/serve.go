@@ -1,9 +1,9 @@
-package main
+package serve
 
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"os"
 
@@ -11,10 +11,8 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"github.com/mitchellh/go-homedir"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"gopkg.in/yaml.v2"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
 )
@@ -33,41 +31,39 @@ type Options struct {
 }
 
 func usage(flags *flag.FlagSet, stdout io.Writer) func() {
-        return func() {
-                fmt.Fprintf(stdout, `Usage: %s serve [OPTIONS]
+	return func() {
+		fmt.Fprintf(stdout, `Usage: %s serve [OPTIONS]
 
 Serve API
 
 Options:
 `, os.Args[0])
-                flags.PrintDefaults()
-        }
+		flags.PrintDefaults()
+	}
 }
 
-func Run(args []string, opts *Options) error {
-	var addr := flags.String("addr", "localhost:17711", "Server address")
-
-        flags := flag.NewFlagSet(args, flag.ExitOnError)
-        flags.Usage = usage(flags, stdout)
-        var (
-	addr := flags.String("addr", "localhost:17711", "Server address")
-        )
-        flags.Usage = usage(flags, stdout)
-        if err := flags.Parse(args); err != nil {
-                return err
-        }
+func Run(args []string, stdout io.Writer, opts *Options) error {
+	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
+	flags.SetOutput(stdout)
+	flags.Usage = usage(flags, stdout)
+	var (
+		addr = flags.String("addr", "localhost:17711", "Server address")
+	)
+	if err := flags.Parse(args); err != nil {
+		return err
+	}
 
 	// Replace tilde with home directory.
-	conf.CertFile, _ = homedir.Expand(conf.CertFile)
-	conf.KeyFile, _ = homedir.Expand(conf.KeyFile)
-	conf.CAFile, _ = homedir.Expand(conf.CAFile)
+	opts.CertFile, _ = homedir.Expand(opts.CertFile)
+	opts.KeyFile, _ = homedir.Expand(opts.KeyFile)
+	opts.CAFile, _ = homedir.Expand(opts.CAFile)
 
 	// Setup logger.
 	logger, _ := zap.NewDevelopment()
 	defer logger.Sync()
 
 	// Setup server options.
-	opts := []grpc.ServerOption{
+	srvrOpts := []grpc.ServerOption{
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_zap.StreamServerInterceptor(logger),
 		)),
@@ -77,30 +73,32 @@ func Run(args []string, opts *Options) error {
 	}
 
 	// Setup TLS server options.
-	if !conf.NoTLS {
-		creds, err := credentials.NewServerTLSFromFile(conf.CertFile, conf.KeyFile)
+	if !opts.NoTLS {
+		creds, err := credentials.NewServerTLSFromFile(opts.CertFile, opts.KeyFile)
 		if err != nil {
 			logger.Fatal("failed to load certificates",
 				zap.Error(err),
-				zap.String("certificate", conf.CertFile),
-				zap.String("key", conf.KeyFile))
+				zap.String("certificate", opts.CertFile),
+				zap.String("key", opts.KeyFile))
 		}
 
-		opts = append(opts, grpc.Creds(creds))
+		srvrOpts = append(srvrOpts, grpc.Creds(creds))
 	}
 
 	// New gRPC server.
-	s := grpc.NewServer(opts...)
+	s := grpc.NewServer(srvrOpts...)
 	services.RegisterSystemServiceServer(s, &server{logger: logger})
 
-	lis, err := net.Listen("tcp", conf.Addr)
+	lis, err := net.Listen("tcp", *addr)
 	if err != nil {
 		logger.Fatal("failed to listen",
 			zap.Error(err),
-			zap.String("address", conf.Addr))
+			zap.String("address", *addr))
 	}
 
 	logger.Debug("serve grpc",
-		zap.String("address", conf.Addr))
+		zap.String("address", *addr))
 	logger.Fatal("serve grpc", zap.Error(s.Serve(lis)))
+
+	return nil
 }
