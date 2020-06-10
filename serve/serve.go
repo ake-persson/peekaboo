@@ -48,7 +48,7 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 	var (
 		addr = flags.String("addr", "localhost:17711", "Server address")
 	)
-	if err := flags.Parse(args); err != nil {
+	if err := flags.Parse(args[1:]); err != nil {
 		return err
 	}
 

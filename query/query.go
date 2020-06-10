@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mickep76/color"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
@@ -37,11 +38,30 @@ type envelope struct {
 	Error    error       `json:"error,omitempty"`
 }
 
+var colorNames = map[string]color.Code{
+	"black":         color.Black,
+	"red":           color.Red,
+	"green":         color.Green,
+	"yellow":        color.Yellow,
+	"blue":          color.Blue,
+	"magenta":       color.Magenta,
+	"cyan":          color.Cyan,
+	"light-gray":    color.LightGray,
+	"dark-gray":     color.DarkGray,
+	"light-red":     color.LightRed,
+	"light-green":   color.LightGreen,
+	"light-yellow":  color.LightYellow,
+	"light-blue":    color.LightBlue,
+	"light-magenta": color.LightMagenta,
+	"light-cyan":    color.LightCyan,
+	"white":         color.White,
+}
+
 func usage(flags *flag.FlagSet, stdout io.Writer) func() {
 	return func() {
-		fmt.Fprintf(stdout, `Usage: %s serve [OPTIONS]
+		fmt.Fprintf(stdout, `Usage: %s query [OPTIONS]
 
-Serve API
+Query API from one or multiple servers
 
 Options:
 `, os.Args[0])
@@ -55,32 +75,30 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 	flags.Usage = usage(flags, stdout)
 	var (
 		format = flags.String("fmt", "json", "Output format [json,csv,table,vtable]")
-		/*	colors = flags.String("colors", "light-cyan,light-yellow,cyan,yellow",
+		colors = flags.String("colors", "light-cyan,light-yellow,cyan,yellow",
 			"Comma separated list of output colors [black,red,green,yellow,blue,magenta,cyan,light-gray,\n"+
 				"dark-gray,light-red,light-green,light-yellow,light-blue,light-magenta,light-cyan,white]\n\n"+
 				"hostname header,hostname content,headers,content")
-		noColor = flags.Bool("no-color", false, "No color output")*/
-		fields = flags.String("fields", "", "Comma separated list of fields to output")
+		noColor = flags.Bool("no-color", false, "No color output")
+		fields  = flags.String("fields", "", "Comma separated list of fields to output")
 	)
-	if err := flags.Parse(args); err != nil {
+	if err := flags.Parse(args[1:]); err != nil {
 		return err
 	}
 
+	// Check resource and address(es).
 	if len(flags.Args()) < 2 {
 		usage(flags, stdout)()
-		return fmt.Errorf("")
+		return fmt.Errorf("no resource or address specified")
 	}
-
-	// Positional arguments.
 	resource := flags.Args()[0]
 	addresses := flags.Args()[1:]
 
-	// Replace tilde with home directory.
-	opts.CertFile, _ = homedir.Expand(opts.CertFile)
-	opts.KeyFile, _ = homedir.Expand(opts.KeyFile)
-	opts.CAFile, _ = homedir.Expand(opts.CAFile)
+	log.Println("flags", flags.Args())
 
 	// Check resource.
+	// TODO
+	// - Resources should register on import.
 	if !text.InList(resource, []string{"system", "users", "groups", "filesystems"}) {
 		return fmt.Errorf("unknown resource: %s", resource)
 	}
@@ -91,8 +109,10 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 	}
 
 	// Check colors.
+	// TODO
+	// - Improve color notation.
 	fmtColors := []string{}
-	for _, c := range text.Split(conf.FormatColors, ",") {
+	for _, c := range text.Split(*colors, ",") {
 		if v, ok := colorNames[c]; ok {
 			fmtColors = append(fmtColors, v.String())
 		} else {
@@ -104,55 +124,58 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 		log.Fatalf("you need to specify 4 colors")
 	}
 
-	opts := []grpc.DialOption{grpc.WithBlock()}
-	if conf.NoTLS {
-		opts = append(opts, grpc.WithInsecure())
+	grpcOpts := []grpc.DialOption{grpc.WithBlock()}
+	if opts.NoTLS {
+		grpcOpts = append(grpcOpts, grpc.WithInsecure())
 	} else {
 		// Load CA certificate file.
-		creds, err := credentials.NewClientTLSFromFile(conf.CAFile, "")
+		creds, err := credentials.NewClientTLSFromFile(opts.CAFile, "")
 		if err != nil {
-			log.Fatalf("failed to load ca certificate: %v", err)
+			return fmt.Errorf("failed to load ca certificate: %v", err)
 		}
 
-		opts = append(opts, grpc.WithTransportCredentials(creds))
+		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(creds))
 	}
 
 	rows := [][]string{}
 	responses := []interface{}{}
 	for _, addr := range addresses {
+		// Set default port.
 		if !strings.Contains(addr, ":") {
 			addr += ":17711"
 		}
 
-		switch conf.Format {
+		switch *format {
 		case "json":
-			resp, err := dialAgent(resource, addr, opts)
+			resp, err := dialAgent(resource, addr, grpcOpts)
 			if err != nil {
 				log.Print(err)
 			}
 			responses = append(responses, resp)
 		case "csv", "table", "vtable":
-			r, err := dialAgentTable(resource, addr, opts)
+			r, err := dialAgentTable(resource, addr, grpcOpts)
 			if err != nil {
 				log.Print(err)
 			}
 			rows = append(rows, r...)
 		default:
-			log.Fatalf("unknown output format: %s", conf.Format)
+			return fmt.Errorf("unknown format: %s", *format)
 		}
 	}
 
-	switch conf.Format {
+	switch *format {
 	case "json":
 		b, _ := json.MarshalIndent(responses, "", "  ")
 		fmt.Print(string(b))
 	case "csv":
-		text.PrintCSV(os.Stdout, text.Split(conf.Fields, ","), rows)
+		text.PrintCSV(os.Stdout, text.Split(*fields, ","), rows)
 	case "table":
-		text.PrintTable(os.Stdout, text.Split(conf.Fields, ","), conf.NoColor, fmtColors, rows)
+		text.PrintTable(os.Stdout, text.Split(*fields, ","), *noColor, fmtColors, rows)
 	case "vtable":
-		text.PrintVertTable(os.Stdout, text.Split(conf.Fields, ","), conf.NoColor, fmtColors, rows)
+		text.PrintVertTable(os.Stdout, text.Split(*fields, ","), *noColor, fmtColors, rows)
 	}
+
+	return nil
 }
 
 func dialAgent(resource string, addr string, opts []grpc.DialOption) (interface{}, error) {
