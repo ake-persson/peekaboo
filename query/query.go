@@ -11,8 +11,6 @@ import (
 	"strings"
 	"time"
 
-	//	"github.com/mickep76/color"
-	"github.com/mitchellh/go-homedir"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 

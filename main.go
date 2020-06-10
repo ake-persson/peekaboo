@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
-	"github.com/peekaboo-labs/peekaboo/query"
+	"github.com/mitchellh/go-homedir"
+
+	//	"github.com/peekaboo-labs/peekaboo/query"
 	"github.com/peekaboo-labs/peekaboo/serve"
 )
 
@@ -60,16 +63,21 @@ func run(args []string, stdout io.Writer) error {
 		return nil
 	}
 
+	// Replace tilde with home directory.
+	*certFile, _ = homedir.Expand(*certFile)
+	*keyFile, _ = homedir.Expand(*keyFile)
+	*caFile, _ = homedir.Expand(*caFile)
+
 	// Check command.
-	if len(flag.Args()) < 1 {
+	if len(flags.Args()) < 1 {
 		usage(flags, stdout)()
 		return fmt.Errorf("no command specified")
 	}
 
 	// Run command.
-	switch os.Args[1] {
+	switch flags.Args()[0] {
 	case "serve":
-		return serve.Run(flag.Args(), stdout, &serve.Options{
+		return serve.Run([]string{strings.Join(flag.Args(), " ")}, stdout, &serve.Options{
 			NoTLS:    *noTLS,
 			NoMTLS:   *noMTLS,
 			NoVerify: *noVerify,
@@ -77,13 +85,15 @@ func run(args []string, stdout io.Writer) error {
 			KeyFile:  *keyFile,
 			CAFile:   *caFile})
 	case "query":
-		return query.Run(flag.Args(), stdout, &serve.Options{
-			NoTLS:    *noTLS,
-			NoMTLS:   *noMTLS,
-			NoVerify: *noVerify,
-			CertFile: *certFile,
-			KeyFile:  *keyFile,
-			CAFile:   *caFile})
+		/*
+			return query.Run(flag.Args(), stdout, &serve.Options{
+				NoTLS:    *noTLS,
+				NoMTLS:   *noMTLS,
+				NoVerify: *noVerify,
+				CertFile: *certFile,
+				KeyFile:  *keyFile,
+				CAFile:   *caFile})
+		*/
 	}
 
 	return fmt.Errorf("unknown command: %s", os.Args[1])

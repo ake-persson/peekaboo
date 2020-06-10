@@ -9,7 +9,6 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	"github.com/mitchellh/go-homedir"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -52,11 +51,6 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
-
-	// Replace tilde with home directory.
-	opts.CertFile, _ = homedir.Expand(opts.CertFile)
-	opts.KeyFile, _ = homedir.Expand(opts.KeyFile)
-	opts.CAFile, _ = homedir.Expand(opts.CAFile)
 
 	// Setup logger.
 	logger, _ := zap.NewDevelopment()
