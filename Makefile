@@ -14,7 +14,7 @@ deps:
 	go get -u ./...
 
 clean:
-	rm -f coverage.out client/client agent/agent catalog/catalog
+	rm -f coverage.out peekaboo
 
 fmt:
 #	gofmt -w system/*.go
@@ -46,14 +46,13 @@ pbgen:
 
 
 build:
-	cd client && go build -ldflags "-X main.version=$(VERSION)"
-	cd agent && go build -ldflags "-X main.version=$(VERSION)"
-	cd catalog && go build -ldflags "-X main.version=$(VERSION)"
+	go build -ldflags "-X main.version=$(VERSION)"
 
 linux:
-	cd client && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(VERSION)"
-	cd agent && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(VERSION)"
-	cd catalog && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(VERSION)"
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(VERSION)"
+
+darwin:
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=$(VERSION)"
 
 major:
 	echo $$(( $(MAJOR) + 1 )) >MAJOR
@@ -67,4 +66,4 @@ minor:
 patch:
 	echo $$(( $(PATCH) + 1 )) >PATCH
 
-.PHONY: deps clean fmt test coverage pbfmt pbgen major minor patch
+.PHONY: deps clean fmt test coverage pbgen build linux darwin major minor patch
