@@ -49,9 +49,9 @@ func run(args []string, stdout io.Writer) error {
 		noMTLS       = flags.Bool("no-mtls", true, "No Mutual TLS, client and server certificate needs to be signed by the same CA authority to establish trust")
 		noVerify     = flags.Bool("no-verify", false, "No TLS verify, for self-signed certificates (testing)")
 		certFile     = flags.String("cert-file", "~/certs/srv.crt", "Server TLS certificate file")
-		keyFile      = flag.String("key-file", "~/certs/srv.key", "Server TLS key file")
-		caFile       = flag.String("ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
-		printVersion = flag.Bool("version", false, "Version")
+		keyFile      = flags.String("key-file", "~/certs/srv.key", "Server TLS key file")
+		caFile       = flags.String("ca-file", "~/certs/root_ca.crt", "CA certificate file, required for Mutual TLS")
+		printVersion = flags.Bool("version", false, "Version")
 	)
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
