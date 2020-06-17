@@ -40,5 +40,5 @@ message System {
   string site = 31;
   string rack = 32;
   int32 rack_position = 33;
-  int32 rack_size = 34;
+  int32 rack_height = 34;
 }

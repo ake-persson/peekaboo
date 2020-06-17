@@ -11,6 +11,20 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
 )
 
+var (
+	Site    string
+	Rack    string
+	RackPos int32
+	RackHgt int32
+)
+
+func SetInfo(sire string, rack string, rackPos int, rackHgt int) {
+	Site = site
+	Rack = rack
+	RackPos = int32(rackPos)
+	RackHgt = int32(rackHgt)
+}
+
 func readFile(fn string) (string, error) {
 	b, err := ioutil.ReadFile(fn)
 	return strings.TrimSpace(strings.TrimRight(string(b), "\n")), err
@@ -18,7 +32,11 @@ func readFile(fn string) (string, error) {
 
 func GetSystem() (*resources.System, error) {
 	s := &resources.System{
-		Kernel: "Linux",
+		Kernel:       "Linux",
+		Site:         Site,
+		Rack:         Rack,
+		RackPosition: RackPos,
+		RackHeight:   RackHgt,
 	}
 
 	s.Hostname, _ = os.Hostname()

@@ -11,11 +11,29 @@ import (
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
 )
 
+var (
+	Site    string
+	Rack    string
+	RackPos int32
+	RackHgt int32
+)
+
+func SetInfo(site string, rack string, rackPos int, rackHgt int) {
+	Site = site
+	Rack = rack
+	RackPos = int32(rackPos)
+	RackHgt = int32(rackHgt)
+}
+
 func GetSystem() (*resources.System, error) {
 	s := &resources.System{
 		Manufacturer: "Apple Inc.",
 		Kernel:       "Darwin",
 		Os:           "Mac OS X",
+		Site:         Site,
+		Rack:         Rack,
+		RackPosition: RackPos,
+		RackHeight:   RackHgt,
 	}
 
 	s.Hostname, _ = os.Hostname()

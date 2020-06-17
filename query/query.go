@@ -94,11 +94,7 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 	resource := flags.Args()[0]
 	addresses := flags.Args()[1:]
 
-	log.Println("flags", flags.Args())
-
 	// Check resource.
-	// TODO
-	// - Resources should register on import.
 	if !text.InList(resource, []string{"system", "users", "groups", "filesystems"}) {
 		return fmt.Errorf("unknown resource: %s", resource)
 	}

@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/credentials"
 
 	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
+	"github.com/peekaboo-labs/peekaboo/pkg/system"
 )
 
 type server struct {
@@ -46,7 +47,11 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 	flags.SetOutput(stdout)
 	flags.Usage = usage(flags, stdout)
 	var (
-		addr = flags.String("addr", "localhost:17711", "Server address")
+		addr    = flags.String("addr", "localhost:17711", "Server address")
+		site    = flags.String("site", "", "Site name")
+		rack    = flags.String("rack", "", "Rack name")
+		rackPos = flags.Int("rack-pos", 0, "Server rack position")
+		rackHgt = flags.Int("rack-hgt", 0, "Server rack heigh in RU (rack units)")
 	)
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
@@ -55,6 +60,9 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 	// Setup logger.
 	logger, _ := zap.NewDevelopment()
 	defer logger.Sync()
+
+	// Setup system info.
+	system.SetInfo(*site, *rack, *rackPos, *rackHgt)
 
 	// Setup server options.
 	srvrOpts := []grpc.ServerOption{
