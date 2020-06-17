@@ -69,7 +69,7 @@ func StringSlice(s *resources.System) []string {
 		s.Description,
 		s.Site,
 		s.Rack,
-		fmt.Sprintf("%dRU", s.RackPosition),
+		fmt.Sprint(s.RackPosition),
 		fmt.Sprintf("%dRU", s.RackHeight),
 	}
 }
