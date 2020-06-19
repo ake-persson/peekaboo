@@ -16,13 +16,17 @@ var (
 	Rack    string
 	RackPos int32
 	RackHgt int32
+	VM      bool
+	VMSrvr  string
 )
 
-func SetInfo(sire string, rack string, rackPos int, rackHgt int) {
+func SetInfo(site string, rack string, rackPos int, rackHgt int, vm bool, vmSrvr string) {
 	Site = site
 	Rack = rack
 	RackPos = int32(rackPos)
 	RackHgt = int32(rackHgt)
+	VM = vm
+	VMSrvr = vmSrvr
 }
 
 func readFile(fn string) (string, error) {
@@ -37,6 +41,8 @@ func GetSystem() (*resources.System, error) {
 		Rack:         Rack,
 		RackPosition: RackPos,
 		RackHeight:   RackHgt,
+		Vm:           VM,
+		VmServer:     VMSrvr,
 	}
 
 	s.Hostname, _ = os.Hostname()

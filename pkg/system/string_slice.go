@@ -37,6 +37,8 @@ var Headers = []string{
 	"rack",
 	"rack_position",
 	"rack_height",
+	"vm",
+	"vm_server",
 }
 
 func StringSlice(s *resources.System) []string {
@@ -71,5 +73,7 @@ func StringSlice(s *resources.System) []string {
 		s.Rack,
 		fmt.Sprint(s.RackPosition),
 		fmt.Sprintf("%dRU", s.RackHeight),
+		fmt.Sprint(s.Vm),
+		s.VmServer,
 	}
 }

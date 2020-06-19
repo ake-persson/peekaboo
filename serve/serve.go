@@ -52,6 +52,8 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 		rack    = flags.String("rack", "", "Rack name")
 		rackPos = flags.Int("rack-pos", 0, "Server rack position")
 		rackHgt = flags.Int("rack-hgt", 0, "Server rack heigh in RU (rack units)")
+		vm      = flags.Bool("vm", false, "Virtual machine")
+		vmSrvr  = flags.String("vm-srvr", "", "Virtual machine server")
 	)
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
@@ -62,7 +64,7 @@ func Run(args []string, stdout io.Writer, opts *Options) error {
 	defer logger.Sync()
 
 	// Setup system info.
-	system.SetInfo(*site, *rack, *rackPos, *rackHgt)
+	system.SetInfo(*site, *rack, *rackPos, *rackHgt, *vm, *vmSrvr)
 
 	// Setup server options.
 	srvrOpts := []grpc.ServerOption{

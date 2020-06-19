@@ -41,4 +41,6 @@ message System {
   string rack = 32;
   int32 rack_position = 33;
   int32 rack_height = 34;
+  bool vm = 35;
+  string vm_server = 36;
 }
