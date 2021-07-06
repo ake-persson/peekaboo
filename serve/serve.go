@@ -19,6 +19,7 @@ import (
 
 type server struct {
 	logger *zap.Logger
+	services.UnimplementedSystemServiceServer
 }
 
 type Options struct {

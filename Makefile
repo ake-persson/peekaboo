@@ -5,13 +5,24 @@ VERSION=$(MAJOR).$(MINOR).$(PATCH)
 
 all:	build
 
+brew-deps:
+	brew install go
+	brew install protobuf
+
 deps:
 	go get -u golang.org/x/lint/golint
 	go get -u github.com/kisielk/errcheck
 	go get -u github.com/client9/misspell/cmd/misspell
 	go get -u github.com/gordonklaus/ineffassign
 	go get -u github.com/fzipp/gocyclo
-	go get -u ./...
+#	go get -u ./...
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1
+
+#	go install google.golang.org/protobuf/cmd/protoc-gen-go
+#go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+#protoc --proto_path=src --go_out=out --go_opt=paths=source_relative foo.proto bar/baz.proto
+
 
 clean:
 	rm -f coverage.out peekaboo
@@ -37,9 +48,7 @@ coverage:
 #       go tool cover -html=coverage.out
 
 pbgen:
-	for f in $$(find pb -type f -name \*.proto); do \
-		protoc -I . --go_out=plugins=grpc:$$GOPATH/src $$f ;\
-	done
+	protoc -I=. --proto_path=pb --go_out=pkg --go-grpc_out=pkg --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative pb/v1/**/*.proto
 	for f in $$(find pkg -type f -name \*.go); do \
 		sed -i "" -e "s/,omitempty//g" -e 's!json:"\(.*\)"!json:"\1" csv:"\1" yaml:"\1"!g' $$f ;\
         done
