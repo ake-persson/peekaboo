@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package peekaboo.v1.resources;
 
-option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources;resources";
+option go_package = "github.com/ake-persson/peekaboo/pkg/pb/v1/resources;resources";
 
 message Filesystem {
   string filesystem = 1;

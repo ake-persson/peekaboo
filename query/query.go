@@ -11,16 +11,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mickep76/color"
+	"github.com/ake-persson/color"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
-	"github.com/peekaboo-labs/peekaboo/pkg/filesystem"
-	"github.com/peekaboo-labs/peekaboo/pkg/group"
-	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
-	"github.com/peekaboo-labs/peekaboo/pkg/system"
-	"github.com/peekaboo-labs/peekaboo/pkg/text"
-	"github.com/peekaboo-labs/peekaboo/pkg/user"
+	"github.com/ake-persson/peekaboo/pkg/filesystem"
+	"github.com/ake-persson/peekaboo/pkg/group"
+	"github.com/ake-persson/peekaboo/pkg/pb/v1/services"
+	"github.com/ake-persson/peekaboo/pkg/system"
+	"github.com/ake-persson/peekaboo/pkg/text"
+	"github.com/ake-persson/peekaboo/pkg/user"
 )
 
 type Options struct {

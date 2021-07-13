@@ -4,7 +4,7 @@ package services
 
 import (
 	context "context"
-	resources "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
+	resources "github.com/ake-persson/peekaboo/pkg/pb/v1/resources"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

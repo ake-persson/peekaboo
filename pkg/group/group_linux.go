@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
-	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
-	"github.com/peekaboo-labs/peekaboo/pkg/text"
+	"github.com/ake-persson/peekaboo/pkg/pb/v1/resources"
+	"github.com/ake-persson/peekaboo/pkg/pb/v1/services"
+	"github.com/ake-persson/peekaboo/pkg/text"
 )
 
 func ListGroups() (*services.ListGroupsResponse, error) {

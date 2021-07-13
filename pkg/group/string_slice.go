@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
+	"github.com/ake-persson/peekaboo/pkg/pb/v1/resources"
 )
 
 var Headers = []string{

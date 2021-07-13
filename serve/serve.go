@@ -13,8 +13,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
-	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
-	"github.com/peekaboo-labs/peekaboo/pkg/system"
+	"github.com/ake-persson/peekaboo/pkg/pb/v1/services"
+	"github.com/ake-persson/peekaboo/pkg/system"
 )
 
 type server struct {

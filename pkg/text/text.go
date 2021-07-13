@@ -7,7 +7,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/mickep76/color"
+	"github.com/ake-persson/color"
 )
 
 func Split(s string, del string) []string {

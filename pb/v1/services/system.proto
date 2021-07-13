@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package peekaboo.v1.services;
 
-option go_package = "github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services;services";
+option go_package = "github.com/ake-persson/peekaboo/pkg/pb/v1/services;services";
 
 import "pb/v1/resources/filesystem.proto";
 import "pb/v1/resources/group.proto";

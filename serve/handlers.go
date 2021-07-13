@@ -3,12 +3,12 @@ package serve
 import (
 	"context"
 
-	"github.com/peekaboo-labs/peekaboo/pkg/filesystem"
-	"github.com/peekaboo-labs/peekaboo/pkg/group"
-	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/resources"
-	"github.com/peekaboo-labs/peekaboo/pkg/pb/v1/services"
-	"github.com/peekaboo-labs/peekaboo/pkg/system"
-	"github.com/peekaboo-labs/peekaboo/pkg/user"
+	"github.com/ake-persson/peekaboo/pkg/filesystem"
+	"github.com/ake-persson/peekaboo/pkg/group"
+	"github.com/ake-persson/peekaboo/pkg/pb/v1/resources"
+	"github.com/ake-persson/peekaboo/pkg/pb/v1/services"
+	"github.com/ake-persson/peekaboo/pkg/system"
+	"github.com/ake-persson/peekaboo/pkg/user"
 )
 
 func (s *server) GetSystem(ctx context.Context, in *services.GetSystemRequest) (*resources.System, error) {

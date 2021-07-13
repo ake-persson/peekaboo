@@ -9,8 +9,8 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 
-	"github.com/peekaboo-labs/peekaboo/query"
-	"github.com/peekaboo-labs/peekaboo/serve"
+	"github.com/ake-persson/peekaboo/query"
+	"github.com/ake-persson/peekaboo/serve"
 )
 
 var version = "undefined"
