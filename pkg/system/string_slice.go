@@ -3,7 +3,7 @@ package system
 import (
 	"fmt"
 
-	"github.com/ake-persson/pkg/pb/v1/resources"
+	"github.com/ake-persson/peekaboo/pkg/pb/v1/resources"
 )
 
 var Headers = []string{
